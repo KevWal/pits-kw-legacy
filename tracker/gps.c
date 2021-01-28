@@ -458,6 +458,10 @@ void SetFlightMode(struct gps_info *bb, int High)
 			printf ("Setting L80 pedestrian mode\n");
 		}
 	}
+	else if (Config.GPSModel == 'A')
+	{
+		// ToDo
+	}
 }
 
 void SetPowerMode(struct gps_info *bb, int SavePower)
@@ -727,6 +731,10 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 				printf("Disabling GSV etc\r\n");
 				char *setRMCGGAOnly = "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n";
 				SendToGPS(bb, (unsigned char *)setRMCGGAOnly, strlen(setRMCGGAOnly));
+			}
+			else if (Config.GPSModel == 'A')
+			{
+				// ToDo
 			}
         }
 		else if (strncmp(Buffer+3, "GLL", 3) == 0)
