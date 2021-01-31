@@ -113,7 +113,10 @@ void LoadConfigFile(struct TConfig *Config)
 		printf("HDMI/Composite outputs will be disabled\n");
 	}
 	
+	// DisableADC is used to disable the ADC on boards that should have an ADC
+	// EnableADC is used to enable the ADC on boards that should not have an ADC
 	ReadBoolean(fp, "Disable_ADC", -1, 0, &(Config->DisableADC));
+	ReadBoolean(fp, "Enable_ADC", -1, 0, &(Config->EnableADC));
 	ReadBoolean(fp, "Disable_RTTY", -1, 0, &(Config->DisableRTTY));
 	Config->Channels[RTTY_CHANNEL].Enabled = !Config->DisableRTTY;
 	if (Config->DisableRTTY)
@@ -954,7 +957,9 @@ int main(void)
 		return 1;
 	}
 
-	if ((Config.BoardType != 3) && (Config.BoardType != 4) && (!Config.DisableADC))
+	// DisableADC is used to disable the ADC on boards that should have an ADC
+	// EnableADC is used to enable the ADC on boards that should not have an ADC
+	if (((Config.BoardType != 3) && (Config.BoardType != 4) && (!Config.DisableADC)) || (Config.EnableADC))
 	{
 		// Not a zero, so should have ADC on it
 		if (I2CADCExists())
