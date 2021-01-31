@@ -66,10 +66,12 @@ double ReadI2CADC(int fd, int chan, double FullScale)
 	int i;
 
 	Value = 0;
-	for (i=0; i<10; i++)
+	for (i=0; i<11; i++)
 	{
 		RawValue = I2CAnalogRead(fd, chan);
-		Value += (double)RawValue * FullScale / 65536;
+		// printf("%d ", RawValue); fflush(stdout);
+		if (i > 0) // Throw away the first value as getting incorrect results
+			Value += (double)RawValue * FullScale / 65536;
 	}
 	
 	return Value / 10;
@@ -97,6 +99,7 @@ void *I2CADCLoop(void *some_void_ptr)
 			BoardCurrent = ReadI2CADC(fd, 1, 11.2);
 			GPS->BoardCurrent = BoardCurrent;
 			// printf("Board Current = %lf\n", BoardCurrent);
+
 
 			close(fd);
 		}
