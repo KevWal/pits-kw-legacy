@@ -54,7 +54,7 @@ int TimeTillImageCompleted(int Channel)
 	if (Config.Channels[Channel].ImageFP == NULL || 
 	    (Config.Channels[Channel].SSDVTotalRecords == 0))
 	{
-		// printf ("Convert image now for channel %d!\n", Channel);
+		printf ("Convert image now for channel %d!\n", Channel);
 		return 0;
 	}
 
@@ -77,6 +77,7 @@ void FindBestImageAndRequestConversion(int Channel, int width, int height)
 	struct stat st;
 	char *SSDVFolder;
 	
+	printf("FindBestImageAndRequestConversion() Channel %d.\n", Channel);
 	LargestFileSize = 0;
 	SSDVFolder = Config.Channels[Channel].SSDVFolder;
 	
@@ -186,6 +187,7 @@ void *CameraLoop(void *some_void_ptr)
 	for (Channel=0; Channel<5; Channel++)
 	{
 		Config.Channels[Channel].TimeSinceLastImage = Config.Channels[Channel].ImagePeriod;
+		// printf("Channel %d, TimeSinceLastImage = %d.\n", Channel, Config.Channels[Channel].ImagePeriod);
 		Config.Channels[Channel].SSDVFileNumber = 0;
 	}
 
@@ -309,12 +311,13 @@ void *CameraLoop(void *some_void_ptr)
 				}
 				
 				// Now check if we need to convert the "best" image before the current SSDV file is fully sent
-
+				//printf("Channel %d, TimeTillImageCompleted %d.\n", Channel, TimeTillImageCompleted(Channel));
 				if (Channel < 4)
 				{
 					// Exclude full-size images - no conversion for those
 					if (TimeTillImageCompleted(Channel) < 25)
 					{
+						// printf("FileExists %s, %d; FileExists %s, %d.\n", Config.Channels[Channel].convert_file, FileExists(Config.Channels[Channel].convert_file), Config.Channels[Channel].ssdv_done, FileExists(Config.Channels[Channel].ssdv_done));
 						// Need converted file soon
 						if (!FileExists(Config.Channels[Channel].convert_file) && !FileExists(Config.Channels[Channel].ssdv_done))
 						{
