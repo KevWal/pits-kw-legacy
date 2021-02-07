@@ -14,6 +14,7 @@ do
 			echo Running script take_pic_$i ...
 			sudo ./take_pic_$i $current_time $current_date
 			sudo rm -f take_pic_$i
+			echo "   done.";
 		fi
 		
 		if [ -e convert_$i ]
@@ -22,6 +23,7 @@ do
 			echo Running script convert_$i ...
 			sudo ./convert_$i $current_date
 			sudo rm -f convert_$i
+			echo "    done."
 		fi
 	done
 
