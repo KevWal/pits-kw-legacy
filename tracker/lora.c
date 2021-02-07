@@ -144,8 +144,10 @@ void setMode(int LoRaChannel, uint8_t newMode)
   
 	if(newMode != RF98_MODE_SLEEP)
 	{
+		// printf("setMode(): newMode = %d.\n", newMode);
 		if (Config.LoRaDevices[LoRaChannel].DIO5 > 0)
 		{
+			// printf("LoRaChannel %d, DIO5 = %d.\n", LoRaChannel, digitalRead(Config.LoRaDevices[LoRaChannel].DIO5));
 			while(digitalRead(Config.LoRaDevices[LoRaChannel].DIO5) == 0)
 			{
 			} 
@@ -169,7 +171,7 @@ void SetLoRaFrequency(int LoRaChannel, double Frequency)
 
 	FrequencyValue = (unsigned long)(Frequency * (1.0 - Config.LoRaDevices[LoRaChannel].PPM/1000000.0) * 7110656 / 434);
 	
-	// printf("Channel %d frequency %lf FrequencyValue = %06lXh\n", LoRaChannel, Frequency, FrequencyValue);
+	printf("Channel %d frequency %lf FrequencyValue = %06lXh\n", LoRaChannel, Frequency, FrequencyValue);
 	
 	writeRegister(LoRaChannel, REG_FRF_MSB, (FrequencyValue >> 16) & 0xFF);		// Set frequency
 	writeRegister(LoRaChannel, REG_FRF_MID, (FrequencyValue >> 8) & 0xFF);
@@ -261,7 +263,7 @@ void SendLoRaData(int LoRaChannel, unsigned char *buffer, int Length)
 	unsigned char data[257];
 	int i;
 	
-	// printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
+	printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
 
 	if (Config.LoRaDevices[LoRaChannel].InRTTYMode != 0)
 	{
@@ -426,7 +428,7 @@ void AddBytesToFSKBuffer(int LoRaChannel, int MaxBytes)
 
 void SendLoRaRTTY(int LoRaChannel, unsigned char *buffer, int Length)
 {
-	// printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
+	printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
 
 	if (Config.LoRaDevices[LoRaChannel].InRTTYMode != 1)
 	{
@@ -508,7 +510,7 @@ void SendLoRaImage(int LoRaChannel, int RTTYMode)
 	StartNewFileIfNeeded(Channel);
 	
 	ResentPacket = ChooseImagePacketToSend(Channel);
-	
+
     if (Config.Channels[Channel].ImageFP != NULL)
     {
         Count = fread(Buffer, 1, 256, Config.Channels[Channel].ImageFP);
@@ -543,7 +545,7 @@ void SendLoRaImage(int LoRaChannel, int RTTYMode)
 		{
 			memset(Buffer, '\0', 255);
 			SendLoRaData(LoRaChannel, Buffer, 255);
-			// printf("Sending NULL packet as time filler\n");
+			printf("Sending NULL packet as time filler\n");
 		}
 	}
 }
@@ -738,7 +740,7 @@ int receiveMessage(int LoRaChannel, unsigned char *message)
 
 		// ChannelPrintf(Channel,  9, 1, "Packet   SNR = %4d   ", (char)(readRegister(Channel, REG_PACKET_SNR)) / 4);
 		// ChannelPrintf(Channel, 10, 1, "Packet  RSSI = %4d   ", readRegister(Channel, REG_PACKET_RSSI) - 157);
-		// printf("LORA%d: Frequency Difference = %4.1lfkHz\n", LoRaChannel, FrequencyError(LoRaChannel) / 1000);
+		printf("LORA%d: Frequency Difference = %4.1lfkHz\n", LoRaChannel, FrequencyError(LoRaChannel) / 1000);
 
 		writeRegister(LoRaChannel, REG_FIFO_ADDR_PTR, currentAddr);   
 		
@@ -872,6 +874,7 @@ void CheckForPacketOnListeningChannels(struct TGPS *GPS)
 		{
 			if (Config.LoRaDevices[LoRaChannel].LoRaMode == lmListening)
 			{
+				printf("CheckForPacketOnListeningChannels(): LoRaChannel %d, DIO0 = %d.\n", LoRaChannel, digitalRead(Config.LoRaDevices[LoRaChannel].DIO0));
 				if (digitalRead(Config.LoRaDevices[LoRaChannel].DIO0))
 				{
 					unsigned char Message[256];
@@ -905,7 +908,7 @@ void CheckForPacketOnListeningChannels(struct TGPS *GPS)
 							{
 								if (strcmp(Payload, Config.Channels[LORA_CHANNEL+LoRaChannel].PayloadID) != 0)
 								{
-									// printf ("%s\n", Message);
+									printf ("%s\n", Message);
 							
 									strcpy((char *)Config.LoRaDevices[LoRaChannel].PacketToRepeat, (char *)Message);
 									Config.LoRaDevices[LoRaChannel].PacketRepeatLength = strlen((char *)Message);
@@ -1006,6 +1009,7 @@ int CheckForFreeChannel(struct TGPS *GPS)
 	{
 		if (Config.LoRaDevices[LoRaChannel].InUse)
 		{
+			// printf("CheckForFreeChannel(): LoRaChannel %d, DIO0 = %d.\n", LoRaChannel, digitalRead(Config.LoRaDevices[LoRaChannel].DIO0));
 			if ((Config.LoRaDevices[LoRaChannel].LoRaMode != lmSending) || digitalRead(Config.LoRaDevices[LoRaChannel].DIO0))
 			{
 				// printf ("LoRa Channel %d is free\n", LoRaChannel);
@@ -1025,7 +1029,7 @@ int CheckForFreeChannel(struct TGPS *GPS)
 				if (TimeToSendOnThisChannel(LoRaChannel, GPS))
 				{
 					// Either sending continuously, or it's our slot to send in
-					// printf("Channel %d is free\n", Channel);
+					// printf("Channel %d is free\n", LoRaChannel);
 					
 					return LoRaChannel;
 				}
@@ -1373,7 +1377,7 @@ void CheckFSKBuffers(struct TGPS *GPS)
 			// Check if packet sent
 			if (FSKPacketSent(LoRaChannel))
 			{
-				// printf("*** PACKET SENT ***\n");
+				printf("*** PACKET SENT ***\n");
 				Config.LoRaDevices[LoRaChannel].LoRaMode = lmIdle;
 				Config.LoRaDevices[LoRaChannel].SendingRTTY = 0;
 			}
@@ -1420,6 +1424,8 @@ void *LoRaLoop(void *some_void_ptr)
 		
 		LoRaChannel = CheckForFreeChannel(GPS);		// 0 or 1 if there's a free channel and we should be sending on that channel now
 
+		// printf("CheckForFreeChannel = %d.\n", LoRaChannel);
+
 		if ((LoRaChannel >= 0) && (LoRaChannel <= 1))
 		{
 			int Channel;
@@ -1443,7 +1449,7 @@ void *LoRaLoop(void *some_void_ptr)
 								  Config.LoRaDevices[LoRaChannel].Bandwidth,
 								  Config.LoRaDevices[LoRaChannel]. SpreadingFactor,
 								  Config.LoRaDevices[LoRaChannel].LowDataRateOptimize);
-				// printf("Reset after Uplink Mode\n");
+				printf("Reset after Uplink Mode\n");
 			}
 
 			// Calling mode needed ?
@@ -1459,7 +1465,7 @@ void *LoRaLoop(void *some_void_ptr)
 			// Handle deliberate delays between packets
 			if ((Config.LoRaDevices[LoRaChannel].PacketEveryMilliSeconds > 0) && ((Config.LoRaDevices[LoRaChannel].MillisSinceLastPacket += LoopMS) < Config.LoRaDevices[LoRaChannel].PacketEveryMilliSeconds))
 			{
-				// Deliberate delay, and we're not there yet
+				printf("Deliberate delay, and we're not there yet.\n");
 				// DO NOTHING!
 			}			
 			else if (Config.LoRaDevices[LoRaChannel].SendPacketType == ptUplinkRepeat)
@@ -1485,7 +1491,7 @@ void *LoRaLoop(void *some_void_ptr)
 
 				sscanf(Config.LoRaDevices[LoRaChannel].CallingFrequency, "%lf", &Frequency);
 				SetLoRaFrequency(LoRaChannel, Frequency);
-				// printf("Calling frequency is %lf\n", Frequency);
+				printf("Calling frequency is %lf\n", Frequency);
 				
 				SetLoRaParameters(LoRaChannel, EXPLICIT_MODE, ERROR_CODING_4_8, BANDWIDTH_41K7, SPREADING_11, 0);	// 0x08);
 
@@ -1501,7 +1507,6 @@ void *LoRaLoop(void *some_void_ptr)
 			else
 			{			
 				int MaxImagePackets, DoRTTY, PacketLength;
-				
 				
 				DoRTTY = 0;
 				
