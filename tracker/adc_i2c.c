@@ -94,7 +94,7 @@ void *I2CADCLoop(void *some_void_ptr)
 			
 			BatteryVoltage = ReadI2CADC(fd, 0, Config.MaxADCVoltage);
 			GPS->BatteryVoltage = BatteryVoltage;
-			// printf("Battery Voltage = %lf\n", BatteryVoltage);
+			printf("Battery Voltage = %lf\n", BatteryVoltage);
 			
 			BoardCurrent = ReadI2CADC(fd, 1, 11.2);
 			GPS->BoardCurrent = BoardCurrent;
