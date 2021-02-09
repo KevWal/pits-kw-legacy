@@ -188,7 +188,8 @@ void *CameraLoop(void *some_void_ptr)
 	{
 		Config.Channels[Channel].TimeSinceLastImage = Config.Channels[Channel].ImagePeriod;
 		// printf("Channel %d, TimeSinceLastImage = %d.\n", Channel, Config.Channels[Channel].ImagePeriod);
-		Config.Channels[Channel].SSDVFileNumber = 0;
+		// SSDVImageNumber defaults to -1, SSDVFileNumber defaults to 0
+		Config.Channels[Channel].SSDVFileNumber = Config.Channels[Channel].SSDVImageNumber + 1;
 	}
 
 	while (1)

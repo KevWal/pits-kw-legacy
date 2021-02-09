@@ -117,6 +117,11 @@ void LoadConfigFile(struct TConfig *Config)
 	// EnableADC is used to enable the ADC on boards that should not have an ADC
 	ReadBoolean(fp, "Disable_ADC", -1, 0, &(Config->DisableADC));
 	ReadBoolean(fp, "Enable_ADC", -1, 0, &(Config->EnableADC));
+	 if (Config->EnableADC)
+	{
+		printf("ADC Enabled\n");
+	}
+
 	ReadBoolean(fp, "Disable_RTTY", -1, 0, &(Config->DisableRTTY));
 	Config->Channels[RTTY_CHANNEL].Enabled = !Config->DisableRTTY;
 	if (Config->DisableRTTY)
@@ -725,8 +730,9 @@ int LoRaUploadNow(struct TGPS *GPS, int PacketTime)
 int main(void)
 {
 	int fd=0;
+	FILE *fptr;
 	int i;
-	int ImagePacketCount, MaxImagePackets;
+	int SSDVImageNumber, ImagePacketCount, MaxImagePackets;
 	unsigned char Sentence[200];
 	struct stat st = {0};
 	struct TGPS GPS;
@@ -805,9 +811,10 @@ int main(void)
 	{
 		// remove SSDV and other camera images, plus log files
 
-		printf("Removing existing photo files\n");
+		printf("Removing existing files\n");
 		remove("gps.txt");
 		remove("telemetry.txt");
+		system("rm -rf /home/pi/pits/tracker/SSDVImageNumber_?.txt"); // Restart SSDV Image numbers from zero
 		remove("/boot/clear.txt");
 		system("rm -rf /home/pi/pits/tracker/images/*");
 	}
@@ -888,7 +895,7 @@ int main(void)
 			
 	// SSDV Folders
 	sprintf(Config.Channels[0].SSDVFolder, "%s/RTTY", SSDVFolder);
-	*Config.Channels[1].SSDVFolder = '\0';										// No folder for APRS images
+	*Config.Channels[1].SSDVFolder = '\0';						// No folder for APRS images
 	sprintf(Config.Channels[2].SSDVFolder, "%s/LORA0", SSDVFolder);
 	sprintf(Config.Channels[3].SSDVFolder, "%s/LORA1", SSDVFolder);
 	sprintf(Config.Channels[4].SSDVFolder, "%s/FULL", SSDVFolder);
@@ -920,10 +927,32 @@ int main(void)
 			// sprintf(Config.Channels[i].next_ssdv, "ssdv_%d.nxt", i);
 			sprintf(Config.Channels[i].convert_file, "convert_%d", i);
 			sprintf(Config.Channels[i].ssdv_done, "ssdv_done_%d", i);
-			
-			Config.Channels[i].SSDVImageNumber = -1;
+		
+			// KW Start from previous image number if one exists
+			sprintf(Config.Channels[i].SSDVImageNumberFile, "SSDVImageNumber_%d.txt", i);
+			SSDVImageNumber = 0;
+
+			if ((fptr = fopen(Config.Channels[i].SSDVImageNumberFile, "r")) != NULL)
+			{
+				if ((SSDVImageNumber = getw(fptr)) > 0)
+				{
+					printf("Opened %s, and read ImageNumber %d.\n", Config.Channels[i].SSDVImageNumberFile, SSDVImageNumber);
+					Config.Channels[i].SSDVImageNumber = SSDVImageNumber;
+				}
+				else
+				{
+					printf("Opened %s, but number read was invalid = %d.\n", Config.Channels[i].SSDVImageNumberFile, SSDVImageNumber);
+					Config.Channels[i].SSDVImageNumber = -1;
+				}
+				fclose(fptr);
+			}
+			else
+			{
+				printf("Cant open SSDVImageNumberFile %s so starting from %d.\n", Config.Channels[i].SSDVImageNumberFile, Config.Channels[i].SSDVImageNumber);
+				Config.Channels[i].SSDVImageNumber = -1;
+			}
+
 			Config.Channels[i].SSDVPacketNumber = -1;
-			
 			Config.Channels[i].ImageFP = NULL;
 		}
 	}

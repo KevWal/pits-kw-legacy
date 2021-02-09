@@ -336,6 +336,7 @@ int NoMoreSSDVPacketsToSend(int Channel)
 int ChooseImagePacketToSend(int Channel)
 {
 	int ImageNumber, PacketNumber, NumberOfPackets, ResentPacket;
+	FILE *fptr;
 
 	ResentPacket = FindNextUnsentImagePacket(Channel, &ImageNumber, &PacketNumber, &NumberOfPackets);
 
@@ -363,6 +364,24 @@ int ChooseImagePacketToSend(int Channel)
 		// Note image and packet numbers for next call
 		Config.Channels[Channel].SSDVImageNumber = ImageNumber;
 		Config.Channels[Channel].SSDVPacketNumber = -1;
+
+		// Save ImageNumber so we can restart from the next image number
+		if ((fptr = fopen(Config.Channels[Channel].SSDVImageNumberFile, "w")) != NULL)
+		{
+			if (putw(ImageNumber, fptr) != 0)
+			{
+				printf("Failed to write ImageNumber %d to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+			}
+			else
+			{
+				printf("ImageNumber %d successfully saved to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+			}
+			fclose(fptr);
+		}
+		else
+		{
+			printf("Failed to open %s, so unable to save image number.\n", Config.Channels[Channel].SSDVImageNumberFile);
+		}
 	}
 		
 	if (Config.Channels[Channel].ImageFP)
@@ -831,11 +850,11 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	
 	
 	// Battery voltage and current, if available
-	if ((Config.BoardType == 3) || (Config.BoardType == 4) || (Config.DisableADC))
+	if (((Config.BoardType == 3) || (Config.BoardType == 4) || (Config.DisableADC)) & (!Config.EnableADC))
 	{
 			// Pi Zero - no ADC on the PITS Zero, or manually disabled ADC
 	}
-	else if (Config.BoardType == 0)
+	else if ((Config.BoardType == 0) || (Config.EnableADC))
 	{
 		// Pi A or B.  Only Battery Voltage on the PITS
 		
