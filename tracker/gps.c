@@ -577,7 +577,10 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 						GPS->Minutes = (utc_seconds / 100) % 100;
 						GPS->Seconds = utc_seconds % 100;
 						GPS->SecondsInDay = GPS->Hours * 3600 + GPS->Minutes * 60 + GPS->Seconds;					
-						// printf("\nGGA: %ld seconds offset\n\n", GPS->SecondsInDay - day_seconds());
+						if ((GPS->SecondsInDay - day_seconds()) > 0)
+						{
+							printf("ERROR: GGA: %ld seconds offset\n", GPS->SecondsInDay - day_seconds());
+						}
 					}
 					
 					if (ActionMask & 2)
@@ -734,8 +737,30 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 			}
 			else if (Config.GPSModel == 'A')
 			{
-				// ToDo
+				printf("Disabling GSV\r\n");
+                                unsigned char setGSV[] = { 0xBA, 0xCE, 0x04, 0x00, 0x06, 0x01, 0x4E, 0x03, 0x00, 0x00, 0x52, 0x03, 0x06, 0x01 };
+                                SendToGPS(bb, setGSV, sizeof(setGSV));
 			}
+        }
+		else if (strncmp(Buffer+3, "ZDA", 3) == 0)
+	{
+            // Disable ZDA
+			if (Config.GPSModel == 'A')
+			{
+				printf("Disabling ZDA\r\n");
+				unsigned char setZDA[] = { 0xBA, 0xCE, 0x04, 0x00, 0x06, 0x01, 0x4E, 0x08, 0x00, 0x00, 0x52, 0x08, 0x06, 0x01 };
+				SendToGPS(bb, setZDA, sizeof(setZDA));
+			}
+	}
+                else if (strncmp(Buffer+3, "TXT", 3) == 0)
+        {
+            // Disable TXT not working?
+//                        if (Config.GPSModel == 'A')
+//                        {
+//                                printf("Disabling TXT\r\n");
+//                                char *setNoTXT = "$PCAS03,,,,,,,,0,,,,,,*32\r\n";
+//                                SendToGPS(bb, (unsigned char *)setNoTXT, strlen(setNoTXT));
+//                        }
         }
 		else if (strncmp(Buffer+3, "GLL", 3) == 0)
         {
@@ -746,6 +771,12 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 				unsigned char setGLL[] = { 0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B };
 				SendToGPS(bb, setGLL, sizeof(setGLL));
 			}
+			else if (Config.GPSModel == 'A')
+                        {
+                                printf("Disabling GLL\r\n");
+                                unsigned char setGLL[] = { 0xBA, 0xCE, 0x04, 0x00, 0x06, 0x01, 0x4E, 0x01, 0x00, 0x00, 0x52, 0x01, 0x06, 0x01 };
+                                SendToGPS(bb, setGLL, sizeof(setGLL));
+                        }
         }
 		else if (strncmp(Buffer+3, "GSA", 3) == 0)
         {
@@ -756,6 +787,12 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 				unsigned char setGSA[] = { 0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x32 };
 				SendToGPS(bb, setGSA, sizeof(setGSA));
 			}
+			else  if (Config.GPSModel == 'A')
+                        {
+                                printf("Disabling GSA\r\n");
+                                unsigned char setGSA[] = { 0xBA, 0xCE, 0x04, 0x00, 0x06, 0x01, 0x4E, 0x02, 0x00, 0x00, 0x52, 0x02, 0x06, 0x01 };
+                                SendToGPS(bb, setGSA, sizeof(setGSA));
+                        }
         }
 		else if (strncmp(Buffer+3, "VTG", 3) == 0)
         {
@@ -766,6 +803,12 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 				unsigned char setVTG[] = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x05, 0x47};
 				SendToGPS(bb, setVTG, sizeof(setVTG));
 			}
+                        else if (Config.GPSModel == 'A')
+                        {
+                                printf("Disabling VTG\r\n");
+                                unsigned char setVTG[] = {0xBA, 0xCE, 0x04, 0x00, 0x06, 0x01, 0x4E, 0x05, 0x00, 0x00, 0x52, 0x05, 0x06, 0x01};
+                                SendToGPS(bb, setVTG, sizeof(setVTG));
+                        }
         }
     }
     else
