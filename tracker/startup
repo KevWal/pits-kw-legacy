@@ -1,8 +1,8 @@
 #!/bin/bash
 cd /home/pi/pits/tracker
-./send_aprs &
-echo none | sudo tee /sys/class/leds/led0/trigger
-echo 1 | sudo tee /sys/class/leds/led0/brightness
+#./send_aprs &
+echo heartbeat | sudo tee /sys/class/leds/led0/trigger
+(sleep 30; echo 0 | sudo tee /sys/class/leds/led0/brightness) &
 sudo ./camera &
 # sleep 30
 # sudo python3 gopro.py &
