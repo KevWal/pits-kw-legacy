@@ -924,7 +924,7 @@ void *GPSLoop(void *some_void_ptr)
 						}
 						else if (SentenceCount == 30)
 						{
-							SetPowerMode(&bb, Config.Power_Saving && (GPS->Satellites > 4));
+							SetPowerMode(&bb, Config.Power_Saving && (GPS->Satellites > 6));
 						}
 						else if (SentenceCount == 40)
 						{
