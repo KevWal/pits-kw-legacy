@@ -123,6 +123,7 @@ struct TChannel
 	char SSDVFolder[200];
 	int ImagePackets;						// Image packets per telemetry packet
 	// int ImagePacketCount;					// Image packets since last telemetry packet
+	int SSDVLast;							// Size of image sent last when in high mode
 	int ImageWidthWhenLow;
 	int ImageHeightWhenLow;
 	int ImageWidthWhenHigh;
