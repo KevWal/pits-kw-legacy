@@ -566,8 +566,8 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 			if (sscanf(Buffer+7, "%f,%f,%c,%f,%c,%d,%d,%f,%f,%c", &utc_time, &latitude, &ns, &longitude, &ew, &lock, &satellites, &hdop, &altitude, &units) >= 1)
 			{	
 				// $GPGGA,124943.00,5157.01557,N,00232.66381,W,1,09,1.01,149.3,M,48.6,M,,*42
-				if (satellites >= 4)
-				{
+				//if (satellites >= 4)
+				//{
 					unsigned long utc_seconds;
 					
 					if (ActionMask & 1)
@@ -582,7 +582,8 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
 							printf("ERROR: GGA: %ld seconds offset\n", GPS->SecondsInDay - day_seconds());
 						}
 					}
-					
+				if (satellites >= 4)
+				{
 					if (ActionMask & 2)
 					{
 						latitude = FixPosition(latitude);
