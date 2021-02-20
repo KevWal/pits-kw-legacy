@@ -263,7 +263,7 @@ void SendLoRaData(int LoRaChannel, unsigned char *buffer, int Length)
 	unsigned char data[257];
 	int i;
 	
-	printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
+	// printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
 
 	if (Config.LoRaDevices[LoRaChannel].InRTTYMode != 0)
 	{
@@ -874,7 +874,7 @@ void CheckForPacketOnListeningChannels(struct TGPS *GPS)
 		{
 			if (Config.LoRaDevices[LoRaChannel].LoRaMode == lmListening)
 			{
-				printf("CheckForPacketOnListeningChannels(): LoRaChannel %d, DIO0 = %d.\n", LoRaChannel, digitalRead(Config.LoRaDevices[LoRaChannel].DIO0));
+				// printf("CheckForPacketOnListeningChannels(): LoRaChannel %d, DIO0 = %d.\n", LoRaChannel, digitalRead(Config.LoRaDevices[LoRaChannel].DIO0));
 				if (digitalRead(Config.LoRaDevices[LoRaChannel].DIO0))
 				{
 					unsigned char Message[256];
