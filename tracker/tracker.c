@@ -814,12 +814,13 @@ int main(void)
 		printf("Removing existing files\n");
 		remove("gps.txt");
 		remove("telemetry.txt");
+		remove("camera.txt");
 		system("rm -rf /home/pi/pits/tracker/SSDVImageNumber_?.txt"); // Restart SSDV Image numbers from zero
 		remove("/boot/clear.txt");
 		system("rm -rf /home/pi/pits/tracker/images/*");
 	}
 		
-	// Remove any old SSDV files
+	// Remove any old SSDV files every time we run
 	system("rm -f ssdv*.bin");
 
 	memset(&GPS, 0, sizeof(struct TGPS));

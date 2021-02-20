@@ -8,10 +8,10 @@ echo Copying configuration file ...
 sudo cp -f boot/pisky.txt /boot
 
 echo Enabling startup script.
-sudo cp -f systemd/tracker.service /lib/systemd/system
-sudo systemctl enable tracker.service
+echo "Add screen -dmS PITS /home/pi/pits/tracker/startup to /etc/rc.local"
 
 echo Starting startup script
-sudo systemctl start tracker.service
+screen -dmS PITS /home/pi/pits/tracker/startup
 
+echo "Run "sudo screen -dr PITS" to attach to PITS Screen session"
 echo DONE
