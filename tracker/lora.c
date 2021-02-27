@@ -553,7 +553,10 @@ void SendLoRaImage(int LoRaChannel, int RTTYMode)
 int TDMTimeToSendOnThisChannel(int LoRaChannel, struct TGPS *GPS)
 {
 	// Can't send till we have the time!
-	if (GPS->Satellites > 0)
+	// KW What if we loose GPS in flight?  We still keep time.
+	// printf("KW GPS->SecondsInDay %ld\n", GPS->SecondsInDay);
+	//if (GPS->Satellites > 0)
+	if (GPS->SecondsInDay > 0)
 	{
 		// Can't Tx twice at the same time
 		if (GPS->SecondsInDay != Config.LoRaDevices[LoRaChannel].LastTxAt)
@@ -603,7 +606,10 @@ int TDMTimeToSendOnThisChannel(int LoRaChannel, struct TGPS *GPS)
 int UplinkTimeToSendOnThisChannel(int LoRaChannel, struct TGPS *GPS)
 {
 	// Can't use time till we have it
-	if (GPS->Satellites > 0)
+	// KW What if we loose GPS in flight?  We still keep time.
+	// printf("KW GPS->SecondsInDay %ld\n", GPS->SecondsInDay);
+	// if (GPS->Satellites > 0)
+	if (GPS->SecondsInDay > 0)
 	{
 		long CycleSeconds;
 		
