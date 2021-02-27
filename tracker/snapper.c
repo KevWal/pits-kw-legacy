@@ -262,11 +262,11 @@ void *CameraLoop(void *some_void_ptr)
 									{
 										if ((width == 0) || (height == 0))
 										{
-											fprintf(fp, "raspistill -st -t 3000 -ex auto -mm matrix %s -o %s\n", Config.CameraSettings, FileName);
+											fprintf(fp, "raspistill -st -t 1000 -ex auto -mm matrix %s -o %s\n", Config.CameraSettings, FileName);
 										}
 										else
 										{
-											fprintf(fp, "raspistill -st -w %d -h %d -t 3000 -ex auto -mm matrix %s -o %s\n", width, height, Config.CameraSettings, FileName);
+											fprintf(fp, "raspistill -st -w %d -h %d -t 1000 -ex auto -mm matrix %s -o %s\n", width, height, Config.CameraSettings, FileName);
 										}
 									}
 								}
@@ -285,7 +285,7 @@ void *CameraLoop(void *some_void_ptr)
 									}
 									else
 									{
-										fprintf(fp, "raspistill -st -w %d -h %d -t 3000 -ex auto -mm matrix %s -o %s\n", width, height, Config.CameraSettings, FileName);
+										fprintf(fp, "raspistill -st -w %d -h %d -t 1000 -ex auto -mm matrix %s -o %s\n", width, height, Config.CameraSettings, FileName);
 									}
 								}
 								
