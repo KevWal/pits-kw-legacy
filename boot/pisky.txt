@@ -12,7 +12,7 @@ Disable_RTTY=Y
 
 #RTTY Payload - 6 character call sign limit for SSDV
 #payload=KW03PR
-#frequency=434.735
+#frequency=434.737
 #baud=50
 #low_width=640
 #low_height=480
@@ -72,7 +72,7 @@ full_low_height=768
 # 0 in either of the following tells the software to use full camera resolution, defaults to 2592 x 1944
 full_high_width=0
 full_high_height=0
-full_image_period=240
+full_image_period=120
 
 ### APRS Config
 ### Default only, not explored
@@ -82,7 +82,7 @@ full_image_period=240
 #APRS_Random=5
 
 ### Lora Config
-LORA_Frequency_0=434.735
+LORA_Frequency_0=434.737
 #LORA_PPM=
 LORA_Payload_0=KW03PL
 LORA_Mode_0=1
@@ -91,14 +91,17 @@ LORA_DIO5_0=29
 #LORA_CS_0=
 #LORA_RST_0=
 
-LORA_low_width_0=320
-LORA_low_height_0=240
+LORA_low_width_0=640
+LORA_low_height_0=480
 LORA_high_width_0=1024
 LORA_high_height_0=768
+#LORA_high_width_0=640
+#LORA_high_height_0=480
+
 # Send 1 Telemetry packet every LORA_image_packets when above high
 LORA_image_packets_0=10
 # Take pic every LORA_image_period seconds and then choose best pic to send
-LORA_image_period_0=15
+LORA_image_period_0=25
 
 # Lora Calling Channel config
 #LORA_Calling_Frequency_0=
@@ -107,7 +110,7 @@ LORA_image_period_0=15
 
 # RTTY using LoRa Module config
 #LORA_RTTY_Baud_0=50
-#LORA_RTTY_Frequency_0=434.255
+#LORA_RTTY_Frequency_0=434.737
 #LORA_RTTY_Shift_0=500
 # Send LORA_RTTY_Count RTTY sentances for every LORA_RTTY_Every LoRa packets
 #LORA_RTTY_Count_0=1
@@ -125,12 +128,12 @@ LORA_Binary_0=ASCII
 #LORA_ListenOnly_0=
 
 #PA_MAX_UK = 0x88=136, PA_MAX_BOOST = 0x8F=143
-#LORA_Power_0=136
+LORA_Power_0=136
 
 ## Uplink
 LORA_Uplink_Cycle_0=60
-LORA_Uplink_Period_0=5
-LORA_Uplink_Frequency_0=434.735
+LORA_Uplink_Period_0=6
+LORA_Uplink_Frequency_0=434.737
 LORA_Uplink_Mode_0=6
 # Add RSSI, SNR & Packets fields to telemetry packets
 LORA_RSSI_Status_0=Y
@@ -138,7 +141,7 @@ LORA_RSSI_Status_0=Y
 LORA_Message_Status_0=Y
 
 # Second Module config
-#LORA_Frequency_1=434.275
+#LORA_Frequency_1=434.737
 #LORA_Payload_1=CHANME
 #LORA_Mode_1=1
 #etc
@@ -146,8 +149,8 @@ LORA_Message_Status_0=Y
 ## Landing prediction
 landing_prediction=Y
 #cd_area=
-payload_weight=60
-#Target_Altitude=
+payload_weight=68
+Target_Altitude=7000
 #prediction_id=
 
 
