@@ -162,8 +162,8 @@ void GetWidthAndHeightForChannel(struct TGPS *GPS, int Channel, int *width, int 
 	}
 	else if (GPS->Altitude >= Config.SSDVHigh)
 	{
-			*width = Config.Channels[Channel].ImageWidthWhenHigh;
-			*height = Config.Channels[Channel].ImageHeightWhenHigh;
+		*width = Config.Channels[Channel].ImageWidthWhenHigh;
+		*height = Config.Channels[Channel].ImageHeightWhenHigh;
 	}
 	else
 	{
