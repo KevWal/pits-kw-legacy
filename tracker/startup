@@ -3,7 +3,7 @@ cd /home/pi/pits/tracker
 #./send_aprs &
 echo heartbeat | sudo tee /sys/class/leds/led0/trigger
 (sleep 30; echo 0 | sudo tee /sys/class/leds/led0/brightness) &
-sudo ./camera &>> ./camera.txt  &
+sudo ./camera &
 # sleep 30
 # sudo python3 gopro.py &
 # python3 sensors.py &
