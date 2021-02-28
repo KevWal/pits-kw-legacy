@@ -161,23 +161,9 @@ void GetWidthAndHeightForChannel(struct TGPS *GPS, int Channel, int *width, int 
 		*height = Config.Channels[Channel].ImageHeightWhenSuperHigh;
 	}
 	else if (GPS->Altitude >= Config.SSDVHigh)
-	{	// Alternate image sizes, uses altitude %2 as a basically random number
-		// if (GPS->Altitude % 2 == 0)
-		// Alternate image sizes, uses a .SSDVLast setting
-		//if (Config.Channels[Channel].SSDVLast == 0)
-		//{
-		//	printf("KW Channel %d High\n", Channel);
-		//	Config.Channels[Channel].SSDVLast = 1;
+	{
 			*width = Config.Channels[Channel].ImageWidthWhenHigh;
 			*height = Config.Channels[Channel].ImageHeightWhenHigh;
-		//}
-		//else
-		//{
-		//	printf("KW Channel %d Low\n", Channel);
-		//	Config.Channels[Channel].SSDVLast = 0;
-		//	*width = Config.Channels[Channel].ImageWidthWhenLow;
-		//	*height = Config.Channels[Channel].ImageHeightWhenLow;
-		//}
 	}
 	else
 	{
