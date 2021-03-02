@@ -171,7 +171,7 @@ void SetLoRaFrequency(int LoRaChannel, double Frequency)
 
 	FrequencyValue = (unsigned long)(Frequency * (1.0 - Config.LoRaDevices[LoRaChannel].PPM/1000000.0) * 7110656 / 434);
 	
-	printf("Channel %d frequency %lf FrequencyValue = %06lXh\n", LoRaChannel, Frequency, FrequencyValue);
+	// printf("Channel %d frequency %lf FrequencyValue = %06lXh\n", LoRaChannel, Frequency, FrequencyValue);
 	
 	writeRegister(LoRaChannel, REG_FRF_MSB, (FrequencyValue >> 16) & 0xFF);		// Set frequency
 	writeRegister(LoRaChannel, REG_FRF_MID, (FrequencyValue >> 8) & 0xFF);
@@ -916,7 +916,7 @@ void CheckForPacketOnListeningChannels(struct TGPS *GPS)
 							{
 								if (strcmp(Payload, Config.Channels[LORA_CHANNEL+LoRaChannel].PayloadID) != 0)
 								{
-									printf ("%s\n", Message);
+									// printf ("%s\n", Message);
 							
 									strcpy((char *)Config.LoRaDevices[LoRaChannel].PacketToRepeat, (char *)Message);
 									Config.LoRaDevices[LoRaChannel].PacketRepeatLength = strlen((char *)Message);
@@ -1391,7 +1391,7 @@ void CheckFSKBuffers(struct TGPS *GPS)
 			// Check if packet sent
 			if (FSKPacketSent(LoRaChannel))
 			{
-				printf("*** PACKET SENT ***\n");
+				// printf("*** PACKET SENT ***\n");
 				Config.LoRaDevices[LoRaChannel].LoRaMode = lmIdle;
 				Config.LoRaDevices[LoRaChannel].SendingRTTY = 0;
 			}
@@ -1521,6 +1521,7 @@ void *LoRaLoop(void *some_void_ptr)
 			else
 			{			
 				int MaxImagePackets, DoRTTY, PacketLength;
+	
 				
 				DoRTTY = 0;
 				

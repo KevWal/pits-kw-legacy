@@ -939,7 +939,7 @@ int main(void)
 			// sprintf(Config.Channels[i].next_ssdv, "ssdv_%d.nxt", i);
 			sprintf(Config.Channels[i].convert_file, "convert_%d", i);
 			sprintf(Config.Channels[i].ssdv_done, "ssdv_done_%d", i);
-		
+
 			// KW Start from previous image number if one exists
 			sprintf(Config.Channels[i].SSDVImageNumberFile, "SSDVImageNumber_%d.txt", i);
 			SSDVImageNumber = 0;
@@ -965,6 +965,7 @@ int main(void)
 			}
 
 			Config.Channels[i].SSDVPacketNumber = -1;
+
 			Config.Channels[i].ImageFP = NULL;
 		}
 	}
