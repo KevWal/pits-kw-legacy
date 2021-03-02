@@ -907,7 +907,7 @@ int main(void)
 			
 	// SSDV Folders
 	sprintf(Config.Channels[0].SSDVFolder, "%s/RTTY", SSDVFolder);
-	*Config.Channels[1].SSDVFolder = '\0';						// No folder for APRS images
+	*Config.Channels[1].SSDVFolder = '\0';										// No folder for APRS images
 	sprintf(Config.Channels[2].SSDVFolder, "%s/LORA0", SSDVFolder);
 	sprintf(Config.Channels[3].SSDVFolder, "%s/LORA1", SSDVFolder);
 	sprintf(Config.Channels[4].SSDVFolder, "%s/FULL", SSDVFolder);
@@ -939,7 +939,7 @@ int main(void)
 			// sprintf(Config.Channels[i].next_ssdv, "ssdv_%d.nxt", i);
 			sprintf(Config.Channels[i].convert_file, "convert_%d", i);
 			sprintf(Config.Channels[i].ssdv_done, "ssdv_done_%d", i);
-
+			
 			// KW Start from previous image number if one exists
 			sprintf(Config.Channels[i].SSDVImageNumberFile, "SSDVImageNumber_%d.txt", i);
 			SSDVImageNumber = 0;
@@ -965,7 +965,7 @@ int main(void)
 			}
 
 			Config.Channels[i].SSDVPacketNumber = -1;
-
+			
 			Config.Channels[i].ImageFP = NULL;
 		}
 	}

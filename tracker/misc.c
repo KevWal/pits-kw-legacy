@@ -1019,7 +1019,7 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 		#endif
 			
 		if (ShowFields) printf("\n");
-
+		
 	 	//snprintf(Sentence, 512, "$$%.15s,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32  ",%d,%d,%d,%3.1f%.12s%.20s%.20s%.40s%.90s%.20s%.10s%.10s%.40s",
 		snprintf(Sentence, 512, "$$%.15s,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32  ",%d,%d,%d,%3.1f%.12s%.20s%.20s%.40s%.90s%.20s%.10s%.20s%.10s%.40s",
 				Config.Channels[Channel].PayloadID,

@@ -1521,7 +1521,7 @@ void *LoRaLoop(void *some_void_ptr)
 			else
 			{			
 				int MaxImagePackets, DoRTTY, PacketLength;
-	
+				
 				
 				DoRTTY = 0;
 				
