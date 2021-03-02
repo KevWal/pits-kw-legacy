@@ -12,3 +12,6 @@ To delete all images and clean up:
 	sudo touch /boot/clear.txt
 	and restart tracker
 
+To kill all:
+	sudo killall startup camera tracker screen
+	sudo killall -9 startup camera tracker screen

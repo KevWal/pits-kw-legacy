@@ -492,7 +492,7 @@ void MarkMissingPackets(int Channel, int ImageNumber, int FirstMissingPacket, in
 	
 	if ((Index = FindImageInList(Channel, ImageNumber)) >= 0)
 	{
-		printf("Index = %d\n", Index);
+		// printf("Index = %d\n", Index);
 		for (i=FirstMissingPacket; i<=LastMissingPacket; i++)
 		{
 			if (!Config.Channels[Channel].SSDVPackets[Index].Packets[i])
@@ -515,7 +515,7 @@ void ProcessSSDVUplinkMessage(int Channel, unsigned char *Message)
 	
 	// !1:256=10-30,74-94,104,113,116,119,138-161,180,182,192,199,201-222,2:69=10-30;CallSign
 
-	printf("Uplink: %s\n", Message);
+	// printf("Uplink: %s\n", Message);
 	
 	ptr = Temp;
 	Message++;		// Skip ! at start

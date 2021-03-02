@@ -263,7 +263,7 @@ void SendLoRaData(int LoRaChannel, unsigned char *buffer, int Length)
 	unsigned char data[257];
 	int i;
 	
-	printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
+	// printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
 
 	if (Config.LoRaDevices[LoRaChannel].InRTTYMode != 0)
 	{

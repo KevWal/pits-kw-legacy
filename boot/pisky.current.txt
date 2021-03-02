@@ -4,7 +4,7 @@ disable_monitor=Y
 # Above high M send high size images
 # Applies to all sections
 high=1000
-superhigh=9999
+superhigh=2000
 
 # -q Set the JPEG quality level (0 to 7, defaults to 4).
 #SSDV_settings=
@@ -132,7 +132,7 @@ LORA_Binary_0=ASCII
 #LORA_ListenOnly_0=
 
 #PA_MAX_UK = 0x88=136, PA_MAX_BOOST = 0x8F=143
-LORA_Power_0=143
+LORA_Power_0=136
 
 ## Uplink
 LORA_Uplink_Cycle_0=60
@@ -143,6 +143,7 @@ LORA_Uplink_Mode_0=6
 LORA_RSSI_Status_0=Y
 # Add uplinked command to telemetry packets
 LORA_Message_Status_0=Y
+LORA_SSDV_Status_0=Y
 
 # Second Module config
 #LORA_Frequency_1=434.737
