@@ -37,6 +37,7 @@ struct TLoRaDevice
 	int GroundCount;
 	int BadCRCCount;
 	char LastCommand[256];
+	char UplinkSSDVCallSign[16];
 	unsigned char PacketToRepeat[256];
 	unsigned char UplinkPacket[256];
 	int PacketRepeatLength;
@@ -65,10 +66,12 @@ struct TLoRaDevice
 	// Uplink Messaging
 	int EnableMessageStatus;
 	int EnableRSSIStatus;
+	int EnableSSDVStatus;
 	int LastMessageNumber;
 	int MessageCount;
 	int LastPacketRSSI;
 	int LastPacketSNR;
+	double LastFreqErr;
 	int PacketCount;
 	int ListenOnly;					// True for listen-only payload that waits for an uplink before responding (or times out and sends anyway)
     
