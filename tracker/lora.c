@@ -261,7 +261,7 @@ void SendLoRaData(int LoRaChannel, unsigned char *buffer, int Length)
 	unsigned char data[257];
 	int i;
 	
-	// printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
+	printf("LoRa Channel %d Sending %d bytes\n", LoRaChannel, Length);
 
 	if (Config.LoRaDevices[LoRaChannel].InRTTYMode != 0)
 	{
@@ -894,6 +894,8 @@ void CheckForPacketOnListeningChannels(struct TGPS *GPS)
 						
 						Config.LoRaDevices[LoRaChannel].LastPacketSNR = SNR;
 						Config.LoRaDevices[LoRaChannel].LastPacketRSSI = RSSI;
+						Config.LoRaDevices[LoRaChannel].LastFreqErr = FrequencyError(LoRaChannel) / 1000;
+						//printf("LORA%d: Frequency Difference = %4.1lfkHz\n", LoRaChannel, FrequencyError(LoRaChannel) / 1000);
 						Config.LoRaDevices[LoRaChannel].PacketCount++;
 						if (Message[0] == '$')
 						{
@@ -1112,6 +1114,7 @@ void LoadLoRaConfig(FILE *fp, struct TConfig *Config)
 		Channel = LoRaChannel + LORA_CHANNEL;
 		
 		strcpy(Config->LoRaDevices[LoRaChannel].LastCommand, "None");
+		strcpy(Config->LoRaDevices[LoRaChannel].UplinkSSDVCallSign, "None");
 		
 		Config->LoRaDevices[LoRaChannel].Frequency[0] = '\0';
 		ReadString(fp, "LORA_Frequency", LoRaChannel, Config->LoRaDevices[LoRaChannel].Frequency, sizeof(Config->LoRaDevices[LoRaChannel].Frequency), 0);
@@ -1213,6 +1216,7 @@ void LoadLoRaConfig(FILE *fp, struct TConfig *Config)
 			Config->LoRaDevices[LoRaChannel].UplinkFrequency = ReadFloat(fp, "LORA_Uplink_Frequency", LoRaChannel, 0, 0);	
 
 			ReadBoolean(fp, "LORA_Message_Status", LoRaChannel, 0, &(Config->LoRaDevices[LoRaChannel].EnableMessageStatus));
+			ReadBoolean(fp, "LORA_SSDV_Status", LoRaChannel, 0, &(Config->LoRaDevices[LoRaChannel].EnableSSDVStatus));
 			ReadBoolean(fp, "LORA_RSSI_Status", LoRaChannel, 0, &(Config->LoRaDevices[LoRaChannel].EnableRSSIStatus));
 			if ((Config->LoRaDevices[LoRaChannel].UplinkPeriod > 0) && (Config->LoRaDevices[LoRaChannel].UplinkCycle > 0))
 			{

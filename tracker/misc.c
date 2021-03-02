@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "gps.h"
 #include "misc.h"
@@ -490,8 +491,9 @@ void ProcessSSDVUplinkMessage(int Channel, unsigned char *Message)
 {
 	int Value, Image, RangeStart;
 	char Temp[8], *ptr;
+	bool EndNextTime = false;
 	
-	// !1:256=10-30,74-94,104,113,116,119,138-161,180,182,192,199,201-222,2:69=10-30
+	// !1:256=10-30,74-94,104,113,116,119,138-161,180,182,192,199,201-222,2:69=10-30;CallSign
 
 	printf("Uplink: %s\n", Message);
 	
@@ -503,6 +505,22 @@ void ProcessSSDVUplinkMessage(int Channel, unsigned char *Message)
 		
 	while (*Message)
 	{
+                if (EndNextTime) // All we have left is the callsign
+                {
+                        if (Message[strlen((char*) Message) - 1] == '\n') // If the last character is /n, remove it
+                        {
+                                Message[strlen((char*) Message) - 1] = 0;
+                        }
+                        strncpy(Config.LoRaDevices[Channel-LORA_CHANNEL].UplinkSSDVCallSign, (char *) Message, 16); // UplinkSSDVCallSign Max 16 characters
+                        //printf("Channel %d, UplinkSSDVCallSign %s\n", Channel, Config.LoRaDevices[Channel-LORA_CHANNEL].UplinkSSDVCallSign);
+                        break;
+                }
+
+                if (*Message == ';') // If all we have left is the callsign, go once more through the loop and then break
+                {
+                        EndNextTime = true;
+                }
+
 		if (isdigit((char)(*Message)))
 		{
 			*ptr++ = *Message;
@@ -804,7 +822,7 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	static int FirstTime=1;
 	int LoRaChannel;
 	int ShowFields;
-	char TimeBuffer[12], ExtraFields1[20], ExtraFields2[20], ExtraFields3[20], ExtraFields4[64], ExtraFields5[32], ExtraFields6[32], ExtraFields7[32], *ExtraFields8, Sentence[512];
+	char TimeBuffer[12], ExtraFields1[20], ExtraFields2[20], ExtraFields3[20], ExtraFields4[64], ExtraFields5[32], ExtraFields6[32], ExtraFields7[32], *ExtraFields8, ExtraFields9[20], Sentence[512];
 	
 	if (FirstTime)
 	{
@@ -826,6 +844,7 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	ExtraFields7[0] = '\0';
 	
 	ExtraFields8 = "";
+	ExtraFields9[0] = '\0';
 	
 	if (ShowFields) printf("%s: ID,Ctr,Time,Lat,Lon,Alt,Speed,Head,Sats,Int.Temp", Channels[Channel]);
 	
@@ -893,16 +912,23 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 		// Fields for LoRa uplink
 		if (Config.LoRaDevices[LoRaChannel].EnableRSSIStatus)
 		{	
-			sprintf(ExtraFields5, ",%d,%d,%d", Config.LoRaDevices[LoRaChannel].LastPacketRSSI,
+			sprintf(ExtraFields5, ",%d,%d,%d,%.1lf", Config.LoRaDevices[LoRaChannel].LastPacketRSSI,
 											   Config.LoRaDevices[LoRaChannel].LastPacketSNR,
-											   Config.LoRaDevices[LoRaChannel].PacketCount);
-			if (ShowFields) printf(",RSSI,SNR,Packets");
+											   Config.LoRaDevices[LoRaChannel].PacketCount,
+											   Config.LoRaDevices[LoRaChannel].LastFreqErr);
+			if (ShowFields) printf(",RSSI,SNR,Packets,FreqErr");
 		}
 
 		if (Config.LoRaDevices[LoRaChannel].EnableMessageStatus)
 		{	
 			sprintf(ExtraFields6, ",%c", Config.LoRaDevices[LoRaChannel].LastCommand[0]);
 			if (ShowFields) printf(",Command");
+		}
+
+		if (Config.LoRaDevices[LoRaChannel].EnableSSDVStatus)
+		{
+			sprintf(ExtraFields9, ",%s", Config.LoRaDevices[LoRaChannel].UplinkSSDVCallSign);
+			if (ShowFields) printf(",UpCall");
 		}
 		
 	}
@@ -973,8 +999,9 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 		#endif
 			
 		if (ShowFields) printf("\n");
-		
-		snprintf(Sentence, 512, "$$%.15s,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32  ",%d,%d,%d,%3.1f%.12s%.20s%.20s%.40s%.90s%.20s%.10s%.10s%.40s",
+
+	 	//snprintf(Sentence, 512, "$$%.15s,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32  ",%d,%d,%d,%3.1f%.12s%.20s%.20s%.40s%.90s%.20s%.10s%.10s%.40s",
+		snprintf(Sentence, 512, "$$%.15s,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32  ",%d,%d,%d,%3.1f%.12s%.20s%.20s%.40s%.90s%.20s%.10s%.20s%.10s%.40s",
 				Config.Channels[Channel].PayloadID,
 				Config.Channels[Channel].SentenceCounter,
 				TimeBuffer,
@@ -990,9 +1017,10 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 				ExtraFields3,
 				ExtraFields4,
 				ExternalFields,
-				ExtraFields5,
-				ExtraFields6,
-				ExtraFields7,
+				ExtraFields5, // RSSI, SNR, Count, FreqErr
+				ExtraFields6, // LastCommand
+				ExtraFields9, // UplinkSSDVCallSign
+				ExtraFields7, // GPS->CutdownStatus
 				ExtraFields8);
 	}
 	
