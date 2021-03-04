@@ -235,7 +235,7 @@ void setupRFM98(int LoRaChannel)
 						  Config.LoRaDevices[LoRaChannel].ImplicitOrExplicit,
 						  Config.LoRaDevices[LoRaChannel].ErrorCoding,
 						  Config.LoRaDevices[LoRaChannel].Bandwidth,
-						  Config.LoRaDevices[LoRaChannel]. SpreadingFactor,
+						  Config.LoRaDevices[LoRaChannel].SpreadingFactor,
 						  Config.LoRaDevices[LoRaChannel].LowDataRateOptimize);
 		
 		writeRegister(LoRaChannel, REG_FIFO_ADDR_PTR, 0);
@@ -252,7 +252,7 @@ void SwitchToLoRaMode(int LoRaChannel)
 					  Config.LoRaDevices[LoRaChannel].ImplicitOrExplicit,
 					  Config.LoRaDevices[LoRaChannel].ErrorCoding,
 					  Config.LoRaDevices[LoRaChannel].Bandwidth,
-					  Config.LoRaDevices[LoRaChannel]. SpreadingFactor,
+					  Config.LoRaDevices[LoRaChannel].SpreadingFactor,
 					  Config.LoRaDevices[LoRaChannel].LowDataRateOptimize);
 						  
 	// setupRFM98(LoRaChannel);
@@ -707,7 +707,10 @@ double FrequencyError(int Channel)
 	}
 
 	// return - ((double)Temp * (1<<24) / 32000000.0) * (125000 / 500000.0);
-	return - ((double)Temp * (1<<24) / 32000000.0) * (BandwidthInKHz(Channel) / 500.0);
+	printf("FrequencyError Now using BandwidthInKHz = %d.\n", LoRaModes[Config.LoRaDevices[Channel].UplinkMode].Bandwidth);
+	printf("FrequencyError Was using BandwidthInKHz = %f.\n", BandwidthInKHz(Channel));
+	// return - ((double)Temp * (1<<24) / 32000000.0) * (BandwidthInKHz(Channel) / 500.0); // Was dividing by tx bandwidth not rx bandwidth?
+	return - ((double)Temp * (1<<24) / 32000000.0) * (LoRaModes[Config.LoRaDevices[Channel].UplinkMode].Bandwidth / 500.0);
 }	
 
 int receiveMessage(int LoRaChannel, unsigned char *message)
@@ -1461,7 +1464,7 @@ void *LoRaLoop(void *some_void_ptr)
 								  Config.LoRaDevices[LoRaChannel].ImplicitOrExplicit,
 								  Config.LoRaDevices[LoRaChannel].ErrorCoding,
 								  Config.LoRaDevices[LoRaChannel].Bandwidth,
-								  Config.LoRaDevices[LoRaChannel]. SpreadingFactor,
+								  Config.LoRaDevices[LoRaChannel].SpreadingFactor,
 								  Config.LoRaDevices[LoRaChannel].LowDataRateOptimize);
 				printf("Reset after Uplink Mode\n");
 			}
