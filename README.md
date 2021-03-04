@@ -1,3 +1,17 @@
+# Changes in this fork #
+- Added SuperHigh mode, allows even bigger pictures once above a second altitude limit (LORA_superhigh_width etc)
+- Changed to rc.local based startup and using Screen to encapsulate tracker in a similar way to lora-gateway
+- Added a Camera log file, to log the output of the camera script
+- Minor ADC Change to ignore the first reading of each average, as was getting some strange values.
+- Add EnableADC configuration to enable the ADC on boards that do not normally have an ADC
+- Started to add config for GPS type 'A' for ATGM336N - works but not all features complete
+- Added printing of any GPS time offset issues
+- Allow listening for ulpink aslong as we have Time from the GPS, not only if we have > 0 Sats (We may loose sats but will still have time as RTC in GPS is good)
+- Record and Print in telemetry string the Frequency Error of uplinks (LORA_RSSI_Status = Y)
+- Record and Print in telemetry string the callsign of SSDV Resend Uplink packet (LORA_SSDV_Status = Y, needs my updated lora-gateway code to add ;CallSign to uplink)
+- Save ImageNumber for each channel so we can restart from the next image number each time tracker restarts
+
+
 # PITS - HAB Tracker software for the PITS boards #
 
 Created by Dave Akerman (dave@sccs.co.uk)
