@@ -8,7 +8,8 @@ echo Copying configuration file ...
 sudo cp -f boot/pisky.txt /boot
 
 echo Enabling startup script.
-echo "Add screen -dmS PITS /home/pi/pits/tracker/startup to /etc/rc.local"
+sudo ln -s /home/pi/pits/etc/motd /etc/motd
+sudo ln -s /home/pi/pits/etc/rc.local rc.local
 
 echo Starting startup script
 sudo screen -dmS PITS /home/pi/pits/tracker/startup
