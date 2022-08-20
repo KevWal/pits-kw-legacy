@@ -87,13 +87,13 @@ high=500
 #image_period=60
 
 
-
 #########################
 # Full size image config
 
 # Low altitude image width & height
-full_low_width=640
-full_low_height=480
+# 0 in either of the following tells the software to use full resolution from the Pi camera
+full_low_width=0
+full_low_height=0
 
 # High altitude image width & height
 # 0 in either of the following tells the software to use full resolution from the Pi camera
@@ -110,7 +110,7 @@ full_image_period=60
 
 # If set, replay flight from named GPS Log file
 # Mut have a valid real GPS input too for timing
-gps_source=../nmea/AASQ2-5Mins.NMEA
+gps_source=../nmea/AASQ2-15Mins.NMEA
 
 # GPS Model, U = UBlox, M = PMTK (ie L80)
 gps_model=U
