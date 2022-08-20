@@ -2,6 +2,7 @@
 desktop.ini
 *.o
 *.~?~
+*.~??~
 tracker/tracker
 tracker/download
 tracker/keep
