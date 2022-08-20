@@ -1,0 +1,11 @@
+rm -f ssdv.jpg
+if [ -e process_image ]
+then
+	./process_image 2 /home/pi/pits/tracker/images/LORA0/19_38_43.JPG 640 480
+else
+	cp /home/pi/pits/tracker/images/LORA0/19_38_43.JPG ssdv.jpg
+fi
+ssdv  -e -c KW01 -i 1 ssdv.jpg ssdv_2_1.bin
+mkdir -p /home/pi/pits/tracker/images/LORA0/$1
+mv /home/pi/pits/tracker/images/LORA0/*.JPG /home/pi/pits/tracker/images/LORA0/$1
+echo DONE > ssdv_done_2
