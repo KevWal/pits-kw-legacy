@@ -336,6 +336,7 @@ int NoMoreSSDVPacketsToSend(int Channel)
 int ChooseImagePacketToSend(int Channel)
 {
 	int ImageNumber, PacketNumber, NumberOfPackets, ResentPacket;
+	FILE *fptr;
 
 	ResentPacket = FindNextUnsentImagePacket(Channel, &ImageNumber, &PacketNumber, &NumberOfPackets);
 
@@ -358,11 +359,29 @@ int ChooseImagePacketToSend(int Channel)
 			sprintf(FileName, "ssdv_%d_%d.bin", Channel, ImageNumber);
 			printf(">>>> Switching to SSDV file %s\n", FileName);
 			Config.Channels[Channel].ImageFP = fopen(FileName, "rb");
+
+			// Save ImageNumber so we can restart from the next image number
+			if ((fptr = fopen(Config.Channels[Channel].SSDVImageNumberFile, "w")) != NULL)
+			{
+				if (putw(ImageNumber, fptr) != 0)
+				{
+					printf("Failed to write ImageNumber %d to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+				}
+				else
+				{
+					printf("ImageNumber %d successfully saved to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+				}
+				fclose(fptr);
+			}
+			else
+			{
+				printf("Failed to open %s, so unable to save image number.\n", Config.Channels[Channel].SSDVImageNumberFile);
+			}
 		}
 
 		// Note image and packet numbers for next call
-		Config.Channels[Channel].SSDVImageNumber = ImageNumber;
-		Config.Channels[Channel].SSDVPacketNumber = -1;
+                Config.Channels[Channel].SSDVImageNumber = ImageNumber;
+                Config.Channels[Channel].SSDVPacketNumber = -1;
 	}
 		
 	if (Config.Channels[Channel].ImageFP)

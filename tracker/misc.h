@@ -143,6 +143,7 @@ struct TChannel
 	int ImagesRequested;
 	
 	// SSDV Variables
+	char SSDVImageNumberFile[100];				// Filename used to persist image number across runs
 	int SSDVImageNumber;					// Image number for last Tx
 	int SSDVPacketNumber;					// Packet number for last Tx
 	int SSDVNumberOfPackets;				// Number of packets in image currently being sent

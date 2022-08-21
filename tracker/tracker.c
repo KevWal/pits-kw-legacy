@@ -726,8 +726,9 @@ int LoRaUploadNow(struct TGPS *GPS, int PacketTime)
 int main(void)
 {
 	int fd=0;
+	FILE *fptr;
 	int i;
-	int ImagePacketCount, MaxImagePackets;
+	int SSDVImageNumber, ImagePacketCount, MaxImagePackets;
 	unsigned char Sentence[200];
 	struct stat st = {0};
 	struct TGPS GPS;
@@ -809,6 +810,7 @@ int main(void)
 		printf("Removing existing log & photo files\n");
 		remove("gps.txt");
 		remove("telemetry.txt");
+		system("rm -rf /home/pi/pits/tracker/SSDVImageNumber_?.txt"); // Restart SSDV Image numbers from zero
 		remove("camera.txt");
 		remove("/boot/clear.txt");
 		system("rm -rf /home/pi/pits/tracker/images/*");
@@ -923,7 +925,32 @@ int main(void)
 			sprintf(Config.Channels[i].convert_file, "convert_%d", i);
 			sprintf(Config.Channels[i].ssdv_done, "ssdv_done_%d", i);
 			
-			Config.Channels[i].SSDVImageNumber = -1;
+			//Config.Channels[i].SSDVImageNumber = -1;
+
+			// KW Start from previous image number if one exists
+			sprintf(Config.Channels[i].SSDVImageNumberFile, "SSDVImageNumber_%d.txt", i);
+			SSDVImageNumber = 0;
+
+			if ((fptr = fopen(Config.Channels[i].SSDVImageNumberFile, "r")) != NULL)
+			{
+				if ((SSDVImageNumber = getw(fptr)) > 0)
+				{
+					printf("Opened %s, and read ImageNumber %d.\n", Config.Channels[i].SSDVImageNumberFile, SSDVImageNumber);
+					Config.Channels[i].SSDVImageNumber = SSDVImageNumber;
+				}
+				else
+				{
+					printf("Opened %s, but number read was invalid = %d.\n", Config.Channels[i].SSDVImageNumberFile, SSDVImageNumber);
+					Config.Channels[i].SSDVImageNumber = -1;
+				}
+				fclose(fptr);
+			}
+			else
+			{
+				printf("Cant open SSDVImageNumberFile %s.\n", Config.Channels[i].SSDVImageNumberFile);
+				Config.Channels[i].SSDVImageNumber = -1;
+			}
+
 			Config.Channels[i].SSDVPacketNumber = -1;
 			
 			Config.Channels[i].ImageFP = NULL;
