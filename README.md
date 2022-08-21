@@ -2,11 +2,16 @@
 
 Created by Dave Akerman (dave@sccs.co.uk)
 
-# Changes by KevWal not pushed upstream #
+# Changes by KevWal #
 
 - Added GPS example flight files for use by gps_source= option
 - Added MOTD, changed startup to rc.local and Screen
-- Added boot/pisky.current.txt as link to /boot/pisky.txt
+- Added /boot/ files to repo via a Git pre-commit hook
+- Added logging of camera script to camera.txt
+- Added samples of convert_ and take_pic_ scripts
+- Default Full images to always be full sized
+- Use LED0 to show PITS startup and then off to save power
+- Save current image number and restart from next, so if tracker reboots images are not over written
 
 
 # PITS - HAB Tracker software for the PITS boards #
