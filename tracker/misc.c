@@ -822,17 +822,19 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	static FILE *ExternalFile=NULL;
 	static int FirstTime=1;
 	int LoRaChannel;
-	int ShowFields;
+	int ShowFields=0;
 	char TimeBuffer[12], ExtraFields1[20], ExtraFields2[20], ExtraFields3[20], ExtraFields4[64], ExtraFields5[32], ExtraFields6[32], ExtraFields7[32], *ExtraFields8, Sentence[512];
 	
 	if (FirstTime)
 	{
 		FirstTime = 0;
+		ShowFields = 1;
 		ExternalFields[0] = '\0';
 	}
 	
 	Config.Channels[Channel].SentenceCounter++;
-	ShowFields = Config.Channels[Channel].SentenceCounter == 1;
+	// KW An RTTY Sentance might be first, so cant rely on SentenceCounter == 1 anymore, moved above
+	//ShowFields = Config.Channels[Channel].SentenceCounter == 1;
 	
 	sprintf(TimeBuffer, "%02d:%02d:%02d", GPS->Hours, GPS->Minutes, GPS->Seconds);
 	
@@ -1039,6 +1041,53 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	{
 		strcpy((char *)TxLine, Sentence);
 	}
+
+	return strlen((char *)TxLine) + 1;
+}
+
+
+// Build sentance without ExtraFields etc for LoRa RTTY, to reduce RTTY Tx time
+int BuildRTTYSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
+{	
+	static int RTTYFirstTime=1;
+	char TimeBuffer[12], Sentence[512];
+	
+	if (RTTYFirstTime)
+	{
+		RTTYFirstTime = 0;
+		printf("RTTY0: ID,Ctr,Time,Lat,Lon,Alt\n");
+	}
+
+	Config.Channels[Channel].SentenceCounter++;
+	// KW ShowFields now set in RTTYFirstTime above
+	// ShowFields = Config.Channels[Channel].SentenceCounter == 1;
+	
+	sprintf(TimeBuffer, "%02d:%02d:%02d", GPS->Hours, GPS->Minutes, GPS->Seconds);
+	
+	// Bouy mode or normal mode ?
+	if ((Config.BuoyModeAltitude > 0) && (GPS->Altitude < Config.BuoyModeAltitude))
+	{
+		sprintf(Sentence, "$$%sRT,%d,%s,%7.5lf,%7.5lf",
+				Config.Channels[Channel].PayloadID,
+				Config.Channels[Channel].SentenceCounter,
+				TimeBuffer,
+				GPS->Latitude,
+				GPS->Longitude);
+	}
+	else
+	{
+		snprintf(Sentence, 512, "$$%.13sRT,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32,
+				Config.Channels[Channel].PayloadID,
+				Config.Channels[Channel].SentenceCounter,
+				TimeBuffer,
+				GPS->Latitude,
+				GPS->Longitude,
+				GPS->Altitude);
+	}
+	
+	AppendCRC(Sentence);
+	
+	strcpy((char *)TxLine, Sentence);
 
 	return strlen((char *)TxLine) + 1;
 }

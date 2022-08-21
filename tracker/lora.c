@@ -1523,7 +1523,7 @@ void *LoRaLoop(void *some_void_ptr)
 				{
 					if ((Config.Channels[Channel].SendMode == 0) || (Config.Channels[Channel].ImagePackets == 0) || (Config.LoRaDevices[LoRaChannel].RTTYEvery > 0))
 					{
-						PacketLength = BuildSentence(Sentence, Channel, GPS);
+						PacketLength = BuildRTTYSentence(Sentence, Channel, GPS);
 						LogMessage("RTTY%d: %s", LoRaChannel, Sentence);
 
 						WriteTelemetryLog((char *)Sentence);
