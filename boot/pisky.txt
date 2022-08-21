@@ -63,7 +63,7 @@ camera=Y
 
 # Custom SSDV parameters for ssdv command
 # eg -q to set the JPEG quality level (0 to 7, defaults to 4)
-#SSDV_settings=
+SSDV_settings= -q 5
 
 # Image size changes at X meters
 high=500
@@ -102,7 +102,7 @@ full_high_height=0
 
 # Seconds between full-sized images
 # 0 disables full-sized images
-full_image_period=60
+full_image_period=30
 
 
 #############
@@ -136,7 +136,7 @@ Flight_Mode_Altitude=1500
 # Landing prediction config
 
 # Turn on landing prediction code
-landing_prediction=N
+landing_prediction=Y
 
 # Parachute area
 # https://www.apogeerockets.com/education/downloads/Newsletter449.pdf
@@ -197,7 +197,7 @@ Enable_Cutdown=0
 
 # Enabled Piezo Buzzer on pin %d after descending below %d meters
 #Piezo_Pin=4
-#Piezo_Alt=750
+Piezo_Alt=750
 
 
 ##############
@@ -229,16 +229,16 @@ LORA_DIO5_0=29
 #LORA_CS_0=0
 #LORA_RST=0
 
-LORA_low_width=640
-LORA_low_height=480
-LORA_high_width=1024
-LORA_high_height=768
+LORA_low_width_0=640
+LORA_low_height_0=480
+LORA_high_width_0=1024
+LORA_high_height_0=768
 
 # Send a Telemetry packet every X image packets
 LORA_image_packets_0=10
 
 # Seconds between taking LORA photographs and then choose best pic to send
-LORA_image_period_0=25
+LORA_image_period_0=15
 
 # TDM mode
 #LORA_Cycle_0=0
@@ -257,6 +257,7 @@ LORA_Binary_0=0
 #LORA_ListenOnly=N
 
 # LORA Uplink settings - see http://www.daveakerman.com/?p=2790
+# Listen for the first 6 seconds of each 60 seconds
 LORA_Uplink_Period_0=6
 LORA_Uplink_Cycle_0=60
 LORA_Uplink_Mode_0=6
