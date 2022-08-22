@@ -2,7 +2,7 @@
 disable_monitor=Y
 
 # Enable Buoy mode below X meters
-#buoy_below=100
+#buoy_below=1100
 
 # Logging options, comma separated, GPS and Telemetry
 # GPS = write all gps strings to gps.txt
@@ -63,7 +63,7 @@ camera=Y
 
 # Custom SSDV parameters for ssdv command
 # eg -q to set the JPEG quality level (0 to 7, defaults to 4)
-SSDV_settings= -q 5
+#SSDV_settings= -q 5
 
 # Image size changes at X meters
 high=500
@@ -110,7 +110,7 @@ full_image_period=30
 
 # If set, replay flight from named GPS Log file
 # Mut have a valid real GPS input too for timing
-gps_source=../nmea/AASQ2-15Mins.NMEA
+#gps_source=../nmea/AASQ2-15Mins.NMEA
 
 # GPS Model, U = UBlox, M = PMTK (ie L80)
 gps_model=U
@@ -229,12 +229,14 @@ LORA_DIO5_0=29
 #LORA_CS_0=0
 #LORA_RST=0
 
-LORA_low_width_0=640
-LORA_low_height_0=480
-LORA_high_width_0=1024
-LORA_high_height_0=768
+# OV5647 aka Pi Cam v1 = Max 2592 x 1944
+LORA_low_width_0=1024
+LORA_low_height_0=768
+LORA_high_width_0=1280
+LORA_high_height_0=960
 
 # Send a Telemetry packet every X image packets
+# Ignored below 'high' meters and telemetry sent every other packet
 LORA_image_packets_0=10
 
 # Seconds between taking LORA photographs and then choose best pic to send
@@ -279,12 +281,12 @@ LORA_RSSI_Status_0=Y
 #LORA_LowOpt_0=
 
 # 0x88 (136) is PA_MAX_UK, PA_MAX_BOOST = 0x8F (143)
-LORA_Power_0=136
+LORA_Power_0=129
 
 # Calling mode - see http://www.daveakerman.com/?p=1816
 LORA_Calling_Frequency_0=433.650
-# After every X normal LORA messages, send our calling frequency messages
-LORA_Calling_Count_0=50
+# After every X normal LORA telemetry messages, send our calling frequency messages
+LORA_Calling_Count_0=5
 # Limit Calling mode packets to slot X
 #LORA_Calling_Slot_0=
 
@@ -297,7 +299,7 @@ LORA_RTTY_Shift_0=488
 
 # Send LORA_RTTY_Count sentences for every LORA_RTTY_Every LORA packets 
 LORA_RTTY_Count_0=2
-LORA_RTTY_Every_0=50
+LORA_RTTY_Every_0=5
 LORA_RTTY_Preamble=8
 
 
