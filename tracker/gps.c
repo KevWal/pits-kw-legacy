@@ -766,6 +766,11 @@ void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count,
     {
        printf("Bad checksum %d %d %s\r\n", Count, strlen(Buffer), Buffer);
 	}
+	long int t = GPS->SecondsInDay - day_seconds();
+	if (abs(t) > 1) // If more than 1 second, plus or minus, then print error
+	{
+		printf("GPS Time %ld seconds offset\n", t);
+	}
 }
 
 

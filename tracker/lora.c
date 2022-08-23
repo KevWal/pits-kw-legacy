@@ -503,7 +503,7 @@ int BuildLoRaPositionPacket(unsigned char *TxLine, int LoRaChannel, struct TGPS 
 	return sizeof(struct TBinaryPacket);
 }
 
-void SendLoRaImage(int LoRaChannel, int RTTYMode)
+void SendLoRaImage(int LoRaChannel, int RTTYMode, struct TGPS *GPS)
 {
     unsigned char Buffer[256];
     size_t Count;
@@ -524,7 +524,7 @@ void SendLoRaImage(int LoRaChannel, int RTTYMode)
 
 			AddImagePacketToRecentList(Channel, Config.Channels[Channel].SSDVImageNumber, Config.Channels[Channel].SSDVPacketNumber);
 			
-			printf("LORA%d: SSDV image %d packet %d of %d %s\r\n", LoRaChannel, Config.Channels[Channel].SSDVImageNumber, Config.Channels[Channel].SSDVPacketNumber+1, Config.Channels[Channel].SSDVNumberOfPackets, ResentPacket ? "** RESEND **" : "");
+			printf("%02d:%02d:%02d LORA%d: SSDV image %d packet %d of %d %s\r\n", GPS->Hours, GPS->Minutes, GPS->Seconds, LoRaChannel, Config.Channels[Channel].SSDVImageNumber, Config.Channels[Channel].SSDVPacketNumber+1, Config.Channels[Channel].SSDVNumberOfPackets, ResentPacket ? "** RESEND **" : "");
 			
 			if (RTTYMode)
 			{
@@ -1534,7 +1534,7 @@ void *LoRaLoop(void *some_void_ptr)
 					}
 					else
 					{
-						SendLoRaImage(LoRaChannel, 1);
+						SendLoRaImage(LoRaChannel, 1, GPS);
 					}
 				}
 				else if ((Config.Channels[Channel].SendMode == 0) || (Config.Channels[Channel].ImagePackets == 0))
@@ -1575,7 +1575,7 @@ void *LoRaLoop(void *some_void_ptr)
 				{
 					// Image packet
 					
-					SendLoRaImage(LoRaChannel, 0);
+					SendLoRaImage(LoRaChannel, 0, GPS);
 				}
 				
 				if ((Config.LoRaDevices[LoRaChannel].RTTYBaudRate > 0) && (Config.LoRaDevices[LoRaChannel].RTTYCount > 0))
