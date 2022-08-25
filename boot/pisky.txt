@@ -111,7 +111,8 @@ full_image_period=30
 # If set, replay flight from named GPS Log file
 # Mut have a valid real GPS input too for timing
 #gps_source=../nmea/AASQ2-15Mins.NMEA
-gps_source=../nmea/Friday-No-GSV-VTG.NMEA
+#gps_source=../nmea/Friday-No-GSV-VTG.NMEA
+gps_source=../nmea/XABEN11.NMEA
 
 # GPS Model, U = UBlox, M = PMTK (ie L80)
 gps_model=U
