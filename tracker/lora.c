@@ -746,7 +746,7 @@ int receiveMessage(int LoRaChannel, unsigned char *message)
 
 		// ChannelPrintf(Channel,  9, 1, "Packet   SNR = %4d   ", (char)(readRegister(Channel, REG_PACKET_SNR)) / 4);
 		// ChannelPrintf(Channel, 10, 1, "Packet  RSSI = %4d   ", readRegister(Channel, REG_PACKET_RSSI) - 157);
-		// printf("LORA%d: Frequency Difference = %4.1lfkHz\n", LoRaChannel, FrequencyError(LoRaChannel) / 1000);
+		printf("LORA%d: Frequency Difference = %4.1lfkHz\n", LoRaChannel, FrequencyError(LoRaChannel) / 1000);
 
 		writeRegister(LoRaChannel, REG_FIFO_ADDR_PTR, currentAddr);   
 		
