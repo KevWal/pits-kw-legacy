@@ -112,7 +112,7 @@ full_image_period=30
 # Mut have a valid real GPS input too for timing
 #gps_source=../nmea/AASQ2-15Mins.NMEA
 #gps_source=../nmea/Friday-No-GSV-VTG.NMEA
-gps_source=../nmea/XABEN11.NMEA
+#gps_source=../nmea/XABEN11-GGA-Only.NMEA
 
 # GPS Model, U = UBlox, M = PMTK (ie L80)
 gps_model=U
@@ -142,10 +142,10 @@ landing_prediction=Y
 
 # Parachute area
 # https://www.apogeerockets.com/education/downloads/Newsletter449.pdf
-cd_area=0.66
+cd_area=0.12
 
 # Payload weight in kg
-payload_weight=0.66
+payload_weight=0.12
 
 # Expected landing altitude in meters (ie ground height above sea level)
 Target_Altitude=100
@@ -198,7 +198,7 @@ Enable_Cutdown=0
 #Strobe_Alt=2000
 
 # Enabled Piezo Buzzer on pin %d after descending below %d meters
-#Piezo_Pin=4
+Piezo_Pin=4
 Piezo_Alt=750
 
 
@@ -284,12 +284,12 @@ LORA_RSSI_Status_0=Y
 #LORA_LowOpt_0=
 
 # 0x88 (136) is PA_MAX_UK, PA_MAX_BOOST = 0x8F (143)
-LORA_Power_0=129
+LORA_Power_0=143
 
 # Calling mode - see http://www.daveakerman.com/?p=1816
 LORA_Calling_Frequency_0=433.650
 # After every X normal LORA telemetry messages, send our calling frequency messages
-LORA_Calling_Count_0=10
+LORA_Calling_Count_0=50
 # Limit Calling mode packets to slot X
 #LORA_Calling_Slot_0=
 
@@ -298,13 +298,13 @@ LORA_Calling_Count_0=10
 # LORA_RTTY_Baud is the enabling flag, without this LORA_RTTY is not enabled
 #LORA_RTTY_Baud_0=50
 # Frequency defaults to LoRaDevices[LoRaChannel].Frequency
-LORA_RTTY_Frequency_0=434.737
-LORA_RTTY_Shift_0=488
+#LORA_RTTY_Frequency_0=434.737
+#LORA_RTTY_Shift_0=488
 
 # Send LORA_RTTY_Count sentences for every LORA_RTTY_Every LORA packets 
-LORA_RTTY_Count_0=2
-LORA_RTTY_Every_0=10
-LORA_RTTY_Preamble=8
+#LORA_RTTY_Count_0=2
+#LORA_RTTY_Every_0=10
+#LORA_RTTY_Preamble=8
 
 
 # Second LORA module
