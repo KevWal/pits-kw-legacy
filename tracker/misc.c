@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "gps.h"
 #include "misc.h"
@@ -895,9 +896,31 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 		if (ShowFields) printf(",Ext.Temp");
 	}
 	
-	// Landing Prediction, if enabled
+	// Landing Prediction, if enabled and not a seperate sentence
 	if (Config.EnableLandingPrediction && (Config.PredictionID[0] == '\0'))
 	{	
+		if (!isnormal(GPS->CDA) && (GPS->CDA != 0))
+		{
+			printf("ERROR: GPS->CDA not normal!\n");
+			GPS->CDA = 0;
+		}
+		if (!isnormal(GPS->PredictedLatitude) && (GPS->PredictedLatitude != 0))
+		{
+			printf("ERROR: GPS->PredictedLatitude not normal!\n");
+			GPS->PredictedLatitude = 0;
+		}
+		if (!isnormal(GPS->PredictedLongitude) && (GPS->PredictedLongitude != 0))
+		{
+			printf("ERROR: GPS->PredictedLongitude not normal!\n");
+			GPS->PredictedLongitude = 0;
+		}
+		if (!isnormal(GPS->PredictedLandingSpeed) && (GPS->PredictedLandingSpeed != 0))
+		{
+			printf("ERROR: GPS->PredictedLandingSpeed not normal!\n");
+			GPS->PredictedLandingSpeed = 0;
+		}
+	
+
 		// sprintf(ExtraFields4, ",%7.5lf,%7.5lf", GPS->PredictedLatitude, GPS->PredictedLongitude);
 		sprintf(ExtraFields4, ",%.2lf,%7.5lf,%7.5lf,%3.1lf,%d", GPS->CDA,
 																GPS->PredictedLatitude,
