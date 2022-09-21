@@ -115,6 +115,7 @@ void LoadConfigFile(struct TConfig *Config)
 
 	// DisableADC is used to disable the ADC on boards that should have an ADC (but dont)
 	// EnableADCVolt is used to enable the ADC on boards that should not have an ADC (but do)	
+	ReadBoolean(fp, "Send_Field_List", -1, 0, &(Config->SendFieldList));
 	ReadBoolean(fp, "Disable_ADC", -1, 0, &(Config->DisableADC));
 	ReadBoolean(fp, "Enable_ADC_Volt", -1, 0, &(Config->EnableADCVolt));
 

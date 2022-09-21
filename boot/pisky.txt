@@ -33,6 +33,7 @@ adc_vmax=12.208
 
 # If RTTY is not disabled, on startup send IP Address and SD Card Free space messages X times
 info_messages=2
+Send_Field_List=N
 
 
 ##############

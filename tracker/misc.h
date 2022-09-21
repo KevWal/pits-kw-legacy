@@ -261,6 +261,7 @@ struct TConfig
 	// Uplink
 	char UplinkCode[32];
 		
+	int SendFieldList;
 	
 #	ifdef EXTRAS_PRESENT
 #		include "ex_misc_config.h"
