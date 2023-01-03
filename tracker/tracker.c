@@ -96,7 +96,7 @@ speed_t BaudToSpeed(int baud)
 
 void LoadConfigFile(struct TConfig *Config)
 {
-	const char* CameraTypes[6] = {"None", "CSI Pi Camera - raspistill", "USB webcam - fswebcam", "USB camera - gphoto2", "Python Script", "External Camera"};
+	const char* CameraTypes[5] = {"None", "CSI Pi Camera - raspistill", "USB webcam - fswebcam", "USB camera - gphoto2", "Python Script"};
 	FILE *fp;
 	int BaudRate;
 	char *filename = "/boot/pisky.txt";
@@ -112,9 +112,12 @@ void LoadConfigFile(struct TConfig *Config)
 	{
 		printf("HDMI/Composite outputs will be disabled\n");
 	}
-	
-	ReadBoolean(fp, "Send_Field_List", -1, 0, &(Config->SendFieldList));
+
+	// DisableADC is used to disable the ADC on boards that should have an ADC (but dont)
+	// EnableADCVolt is used to enable the ADC on boards that should not have an ADC (but do)	
 	ReadBoolean(fp, "Disable_ADC", -1, 0, &(Config->DisableADC));
+	ReadBoolean(fp, "Enable_ADC_Volt", -1, 0, &(Config->EnableADCVolt));
+
 	ReadBoolean(fp, "Disable_RTTY", -1, 0, &(Config->DisableRTTY));
 	Config->Channels[RTTY_CHANNEL].Enabled = !Config->DisableRTTY;
 	if (Config->DisableRTTY)
@@ -212,50 +215,39 @@ void LoadConfigFile(struct TConfig *Config)
 		}
 
 		Config->SSDVHigh = ReadInteger(fp, "high", -1, 0, 2000);
-		if (Config->Camera != 5)
-		{
-			printf ("Image size changes at %dm\n", Config->SSDVHigh);
-		}
+		printf ("Image size changes at %dm\n", Config->SSDVHigh);
 	
 		if (!Config->DisableRTTY)
 		{
 			Config->Channels[RTTY_CHANNEL].ImageWidthWhenLow = ReadInteger(fp, "low_width", -1, 0, 320);
 			Config->Channels[RTTY_CHANNEL].ImageHeightWhenLow = ReadInteger(fp, "low_height", -1, 0, 240);
+			printf ("RTTY Low image size %d x %d pixels\n", Config->Channels[RTTY_CHANNEL].ImageWidthWhenLow, Config->Channels[0].ImageHeightWhenLow);
 			
 			Config->Channels[RTTY_CHANNEL].ImageWidthWhenHigh = ReadInteger(fp, "high_width", -1, 0, 640);
 			Config->Channels[RTTY_CHANNEL].ImageHeightWhenHigh = ReadInteger(fp, "high_height", -1, 0, 480);
+			printf ("RTTY High image size %d x %d pixels\n", Config->Channels[RTTY_CHANNEL].ImageWidthWhenHigh, Config->Channels[0].ImageHeightWhenHigh);
 
 			Config->Channels[RTTY_CHANNEL].ImagePackets = ReadInteger(fp, "image_packets", -1, 0, 4);
+			printf ("RTTY: 1 Telemetry packet every %d image packets\n", Config->Channels[RTTY_CHANNEL].ImagePackets);
 			
 			Config->Channels[RTTY_CHANNEL].ImagePeriod = ReadInteger(fp, "image_period", -1, 0, 60);
-			
-			if (Config->Camera != 5)
-			{
-				printf ("RTTY Low image size %d x %d pixels\n", Config->Channels[RTTY_CHANNEL].ImageWidthWhenLow, Config->Channels[0].ImageHeightWhenLow);
-				printf ("RTTY High image size %d x %d pixels\n", Config->Channels[RTTY_CHANNEL].ImageWidthWhenHigh, Config->Channels[0].ImageHeightWhenHigh);
-				printf ("RTTY: 1 Telemetry packet every %d image packets\n", Config->Channels[RTTY_CHANNEL].ImagePackets);
-				printf ("RTTY: %d seconds between photographs\n", Config->Channels[RTTY_CHANNEL].ImagePeriod);
-			}
+			printf ("RTTY: %d seconds between photographs\n", Config->Channels[RTTY_CHANNEL].ImagePeriod);
 		}
 
 		// Set up full-size image parameters		
 		Config->Channels[FULL_CHANNEL].ImageWidthWhenLow = ReadInteger(fp, "full_low_width", -1, 0, 640);
 		Config->Channels[FULL_CHANNEL].ImageHeightWhenLow = ReadInteger(fp, "full_low_height", -1, 0, 480);
+		printf ("Full Low image size %d x %d pixels\n", Config->Channels[FULL_CHANNEL].ImageWidthWhenLow, Config->Channels[FULL_CHANNEL].ImageHeightWhenLow);
 		
 		Config->Channels[FULL_CHANNEL].ImageWidthWhenHigh = ReadInteger(fp, "full_high_width", -1, 0, 2592);
 		Config->Channels[FULL_CHANNEL].ImageHeightWhenHigh = ReadInteger(fp, "full_high_height", -1, 0, 1944);
+		printf ("Full High image size %d x %d pixels\n", Config->Channels[FULL_CHANNEL].ImageWidthWhenHigh, Config->Channels[FULL_CHANNEL].ImageHeightWhenHigh);
 
 		Config->Channels[FULL_CHANNEL].ImagePeriod = ReadInteger(fp, "full_image_period", -1, 0, 60);
-	
+		printf ("Full size: %d seconds between photographs\n", Config->Channels[FULL_CHANNEL].ImagePeriod);
+		
 		Config->Channels[FULL_CHANNEL].ImagePackets = Config->Channels[FULL_CHANNEL].ImagePeriod > 0;
 		Config->Channels[FULL_CHANNEL].Enabled = Config->Channels[FULL_CHANNEL].ImagePackets;
-		
-		if (Config->Camera != 5)
-		{
-			printf ("Full Low image size %d x %d pixels\n", Config->Channels[FULL_CHANNEL].ImageWidthWhenLow, Config->Channels[FULL_CHANNEL].ImageHeightWhenLow);
-			printf ("Full High image size %d x %d pixels\n", Config->Channels[FULL_CHANNEL].ImageWidthWhenHigh, Config->Channels[FULL_CHANNEL].ImageHeightWhenHigh);
-			printf ("Full size: %d seconds between photographs\n", Config->Channels[FULL_CHANNEL].ImagePeriod);
-		}
 	}
 
 	// GPS
@@ -756,8 +748,8 @@ int main(void)
 		exit(1);
 	}
 	
-	printf("\n\nRASPBERRY PI-IN-THE-SKY FLIGHT COMPUTER V1.9.1\n");
-	printf(    "==============================================\n\n");
+	printf("\n\nRASPBERRY PI-IN-THE-SKY FLIGHT COMPUTER\n");
+	printf(    "=======================================\n\n");
 
 	Config.BoardType = GetBoardType(&Config.i2cChannel);
 
@@ -815,7 +807,7 @@ int main(void)
 	{
 		// remove SSDV and other camera images, plus log files
 
-		printf("Removing existing photo files\n");
+		printf("Removing existing log & photo files\n");
 		remove("gps.txt");
 		remove("telemetry.txt");
 		system("rm -rf /home/pi/pits/tracker/SSDVImageNumber_?.txt"); // Restart SSDV Image numbers from zero
@@ -994,7 +986,9 @@ int main(void)
 		return 1;
 	}
 
-	if ((Config.BoardType != 3) && (Config.BoardType != 4) && (!Config.DisableADC))
+	// DisableADC is used to disable the ADC on boards that should have an ADC (but dont)
+	// EnableADCVolt is used to enable the ADC on boards that should not have an ADC (but do)
+	if (((Config.BoardType != 3) && (Config.BoardType != 4) && (!Config.DisableADC)) || (Config.EnableADCVolt))
 	{
 		// Not a zero, so should have ADC on it
 		if (I2CADCExists())

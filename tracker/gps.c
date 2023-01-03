@@ -540,15 +540,13 @@ time_t day_seconds()
     return t1 - t2;
 }
 
-int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, int ActionMask)
+void ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, int ActionMask)
 {
 	static int SystemTimeHasBeenSet=0;
 	unsigned long utc_seconds;
     float utc_time, latitude, longitude, hdop, altitude;
-	int lock, satellites, result;
+	int lock, satellites;
 	char active, ns, ew, units, timestring[16], speedstring[16], *course, *date, restofline[80], *ptr;
-	
-	result = 0;
 	
     if (GPSChecksumOK(Buffer, Count))
 	{
@@ -556,7 +554,6 @@ int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, 
 	
 		if (strncmp(Buffer+3, "GGA", 3) == 0)
 		{
-			result = 1;
 			GPS->MessageCount++;
 			if (GPS->FlightMode >= fmLaunched)
 			{
@@ -786,8 +783,6 @@ int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, 
     {
        printf("Bad checksum %d %d %s\r\n", Count, strlen(Buffer), Buffer);
 	}
-	
-	return result;
 }
 
 
@@ -858,54 +853,31 @@ void *GPSLoop(void *some_void_ptr)
                	if (Character == '\n')
                	{
                		Line[Length] = '\0';
+					if (Config.ShowGPS)
+					{
+						printf("%s", Line);
+					}
 					
 					// if ((fp != NULL) && (strstr(Line, "GGA") != NULL))
 					if (fp != NULL)
 					{
-						// Get time only from GPS, then get position from NMEA file
 						static int PostFileCount=0;
 						static char Buffer[100];
-											
-						if (ProcessLine(&bb, GPS, Line, Length, 1))
+						
+						// Get time only from GPS, then get position from NMEA file
+						if (fgets(Buffer, sizeof Buffer, fp) == NULL)
 						{
-							int Done=0;
-
-							if (Config.ShowGPS)
+							if (++PostFileCount > 20)
 							{
-								printf("REAL: %s", Line);
-							}
-							
-							while (!Done)
-							{
-								if (fgets(Buffer, sizeof Buffer, fp) == NULL)
-								{
-									Done = 1;
-									if (++PostFileCount > 20)
-									{
-										fclose(fp);
-										exit(1);
-									}
-								}
-								
-								if (ProcessLine(&bb, GPS, Buffer, strlen(Buffer), 2))
-								{
-									Done = 1;
-									
-									if (Config.ShowGPS)
-									{
-										printf("FILE: %s", Buffer);
-									}
-								}
+								fclose(fp);
+								exit(1);
 							}
 						}
+						ProcessLine(&bb, GPS, Line, Length, 1);
+						ProcessLine(&bb, GPS, Buffer, strlen(Buffer), 2);
 					}
 					else
 					{				
-						if (Config.ShowGPS)
-						{
-							printf("%s", Line);
-						}
-					
 						ProcessLine(&bb, GPS, Line, Length, 3);
 						
 						if (++SentenceCount > 100) SentenceCount = 0;

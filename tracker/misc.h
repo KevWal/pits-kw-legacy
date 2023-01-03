@@ -169,6 +169,7 @@ struct TConfig
 	int BoardType;
 	int i2cChannel;
 	int DisableADC;
+	int EnableADCVolt;
 	int32_t BuoyModeAltitude;
 	double MaxADCVoltage;
 	
@@ -260,7 +261,6 @@ struct TConfig
 	// Uplink
 	char UplinkCode[32];
 		
-	int SendFieldList;
 	
 #	ifdef EXTRAS_PRESENT
 #		include "ex_misc_config.h"
