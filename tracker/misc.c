@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "gps.h"
 #include "misc.h"
@@ -336,6 +337,7 @@ int NoMoreSSDVPacketsToSend(int Channel)
 int ChooseImagePacketToSend(int Channel)
 {
 	int ImageNumber, PacketNumber, NumberOfPackets, ResentPacket;
+	FILE *fptr;
 
 	ResentPacket = FindNextUnsentImagePacket(Channel, &ImageNumber, &PacketNumber, &NumberOfPackets);
 
@@ -358,11 +360,29 @@ int ChooseImagePacketToSend(int Channel)
 			sprintf(FileName, "ssdv_%d_%d.bin", Channel, ImageNumber);
 			printf(">>>> Switching to SSDV file %s\n", FileName);
 			Config.Channels[Channel].ImageFP = fopen(FileName, "rb");
+
+			// Save ImageNumber so we can restart from the next image number
+			if ((fptr = fopen(Config.Channels[Channel].SSDVImageNumberFile, "w")) != NULL)
+			{
+				if (putw(ImageNumber, fptr) != 0)
+				{
+					printf("Failed to write ImageNumber %d to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+				}
+				else
+				{
+					printf("ImageNumber %d successfully saved to %s.\n", ImageNumber, Config.Channels[Channel].SSDVImageNumberFile);
+				}
+				fclose(fptr);
+			}
+			else
+			{
+				printf("Failed to open %s, so unable to save image number.\n", Config.Channels[Channel].SSDVImageNumberFile);
+			}
 		}
 
 		// Note image and packet numbers for next call
-		Config.Channels[Channel].SSDVImageNumber = ImageNumber;
-		Config.Channels[Channel].SSDVPacketNumber = -1;
+                Config.Channels[Channel].SSDVImageNumber = ImageNumber;
+                Config.Channels[Channel].SSDVPacketNumber = -1;
 	}
 		
 	if (Config.Channels[Channel].ImageFP)
@@ -810,15 +830,18 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	int LoRaChannel;
 	int ShowFields;
 	char TimeBuffer[12], ExtraFields1[20], ExtraFields2[20], ExtraFields3[20], ExtraFields4[64], ExtraFields5[32], ExtraFields6[32], ExtraFields7[32], *ExtraFields8, Sentence[512], FieldList[32];
+
 	
 	if (FirstTime)
 	{
 		FirstTime = 0;
+		ShowFields = 1;
 		ExternalFields[0] = '\0';
 	}
 	
 	Config.Channels[Channel].SentenceCounter++;
-	ShowFields = Config.Channels[Channel].SentenceCounter == 1;
+	// KW An RTTY Sentance might be first, so cant rely on SentenceCounter == 1 anymore, moved above
+	//ShowFields = Config.Channels[Channel].SentenceCounter == 1;
 	
 	sprintf(TimeBuffer, "%02d:%02d:%02d", GPS->Hours, GPS->Minutes, GPS->Seconds);
 	
@@ -886,9 +909,31 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 		if (ShowFields) printf(",Ext.Temp");
 	}
 	
-	// Landing Prediction, if enabled
+	// Landing Prediction, if enabled and not a seperate sentence
 	if (Config.EnableLandingPrediction && (Config.PredictionID[0] == '\0'))
 	{	
+		if (!isnormal(GPS->CDA) && (GPS->CDA != 0))
+		{
+			printf("ERROR: GPS->CDA not normal!\n");
+			GPS->CDA = 0;
+		}
+		if (!isnormal(GPS->PredictedLatitude) && (GPS->PredictedLatitude != 0))
+		{
+			printf("ERROR: GPS->PredictedLatitude not normal!\n");
+			GPS->PredictedLatitude = 0;
+		}
+		if (!isnormal(GPS->PredictedLongitude) && (GPS->PredictedLongitude != 0))
+		{
+			printf("ERROR: GPS->PredictedLongitude not normal!\n");
+			GPS->PredictedLongitude = 0;
+		}
+		if (!isnormal(GPS->PredictedLandingSpeed) && (GPS->PredictedLandingSpeed != 0))
+		{
+			printf("ERROR: GPS->PredictedLandingSpeed not normal!\n");
+			GPS->PredictedLandingSpeed = 0;
+		}
+	
+
 		// sprintf(ExtraFields4, ",%7.5lf,%7.5lf", GPS->PredictedLatitude, GPS->PredictedLongitude);
 		sprintf(ExtraFields4, ",%.2lf,%7.5lf,%7.5lf,%3.1lf,%d", GPS->CDA,
 																GPS->PredictedLatitude,
@@ -1037,6 +1082,53 @@ int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
 	{
 		strcpy((char *)TxLine, Sentence);
 	}
+
+	return strlen((char *)TxLine) + 1;
+}
+
+
+// Build sentance without ExtraFields etc for LoRa RTTY, to reduce RTTY Tx time
+int BuildRTTYSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS)
+{	
+	static int RTTYFirstTime=1;
+	char TimeBuffer[12], Sentence[512];
+	
+	if (RTTYFirstTime)
+	{
+		RTTYFirstTime = 0;
+		printf("RTTY0: ID,Ctr,Time,Lat,Lon,Alt\n");
+	}
+
+	Config.Channels[Channel].SentenceCounter++;
+	// KW ShowFields now set in RTTYFirstTime above
+	// ShowFields = Config.Channels[Channel].SentenceCounter == 1;
+	
+	sprintf(TimeBuffer, "%02d:%02d:%02d", GPS->Hours, GPS->Minutes, GPS->Seconds);
+	
+	// Bouy mode or normal mode ?
+	if ((Config.BuoyModeAltitude > 0) && (GPS->Altitude < Config.BuoyModeAltitude))
+	{
+		sprintf(Sentence, "$$%sRT,%d,%s,%7.5lf,%7.5lf",
+				Config.Channels[Channel].PayloadID,
+				Config.Channels[Channel].SentenceCounter,
+				TimeBuffer,
+				GPS->Latitude,
+				GPS->Longitude);
+	}
+	else
+	{
+		snprintf(Sentence, 512, "$$%.13sRT,%d,%.9s,%7.5lf,%7.5lf,%5.5" PRId32,
+				Config.Channels[Channel].PayloadID,
+				Config.Channels[Channel].SentenceCounter,
+				TimeBuffer,
+				GPS->Latitude,
+				GPS->Longitude,
+				GPS->Altitude);
+	}
+	
+	AppendCRC(Sentence);
+	
+	strcpy((char *)TxLine, Sentence);
 
 	return strlen((char *)TxLine) + 1;
 }

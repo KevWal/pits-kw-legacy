@@ -11,17 +11,19 @@ do
 		then
 			current_date=$(date "+%d_%m_%y")
 			current_time=$(date "+%H_%M_%S")
-			echo Running script take_pic_$i ...
+			echo Camera: Running script take_pic_$i ...
 			sudo ./take_pic_$i $current_time $current_date
 			sudo rm -f take_pic_$i
+			echo Camera: Script take_pic_$i done.
 		fi
 		
 		if [ -e convert_$i ]
 		then
 			current_date=$(date "+%d_%m_%y")
-			echo Running script convert_$i ...
+			echo Camera: Running script convert_$i ...
 			sudo ./convert_$i $current_date
 			sudo rm -f convert_$i
+			echo Camera: Script convert_$i done.
 		fi
 	done
 

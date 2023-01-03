@@ -543,7 +543,7 @@ time_t day_seconds()
 int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, int ActionMask)
 {
 	static int SystemTimeHasBeenSet=0;
-	
+	unsigned long utc_seconds;
     float utc_time, latitude, longitude, hdop, altitude;
 	int lock, satellites, result;
 	char active, ns, ew, units, timestring[16], speedstring[16], *course, *date, restofline[80], *ptr;
@@ -567,8 +567,6 @@ int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, 
 				// $GPGGA,124943.00,5157.01557,N,00232.66381,W,1,09,1.01,149.3,M,48.6,M,,*42
 				if (satellites >= 4)
 				{
-					unsigned long utc_seconds;
-					
 					if (ActionMask & 1)
 					{
 						utc_seconds = utc_time;
@@ -662,6 +660,19 @@ int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, 
 								digitalWrite(Config.PiezoPin, 1);
 							}
 						}
+					}
+				}
+				else
+				{
+					printf("GPS Sats less than 4!\n");
+					// Once we have had system time once, we can keep using GPS time
+					if ((SystemTimeHasBeenSet) && (ActionMask & 1))
+                                        {
+                                                utc_seconds = utc_time;
+                                                GPS->Hours = utc_seconds / 10000;
+                                                GPS->Minutes = (utc_seconds / 100) % 100;
+                                                GPS->Seconds = utc_seconds % 100;
+                                                GPS->SecondsInDay = GPS->Hours * 3600 + GPS->Minutes * 60 + GPS->Seconds;
 					}
 				}
 				if (ActionMask & 2)
@@ -764,6 +775,12 @@ int ProcessLine(struct gps_info *bb, struct TGPS *GPS, char *Buffer, int Count, 
 				SendToGPS(bb, setVTG, sizeof(setVTG));
 			}
         }
+        long int t = GPS->SecondsInDay - day_seconds();
+        if (abs(t) > 1) // If more than 1 second, plus or minus, then print error
+        {
+                printf("GPS Time %ld seconds offset\n", t);
+        }
+
     }
     else
     {

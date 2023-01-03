@@ -143,6 +143,7 @@ struct TChannel
 	int ImagesRequested;
 	
 	// SSDV Variables
+	char SSDVImageNumberFile[100];				// Filename used to persist image number across runs
 	int SSDVImageNumber;					// Image number for last Tx
 	int SSDVPacketNumber;					// Packet number for last Tx
 	int SSDVNumberOfPackets;				// Number of packets in image currently being sent
@@ -293,6 +294,7 @@ int prog_count(char* name);
 int GetBoardType(int *i2cChannel);
 int NoMoreSSDVPacketsToSend(int Channel);
 int BuildSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS);
+int BuildRTTYSentence(unsigned char *TxLine, int Channel, struct TGPS *GPS);
 int FixDirection180(int Angle);
 void SetupPWMFrequency(int Pin, int Frequency);
 void ControlPWMOutput(int Pin, int Period);

@@ -2,6 +2,20 @@
 
 Created by Dave Akerman (dave@sccs.co.uk)
 
+# Changes by KevWal #
+
+- Added GPS example flight files for use by gps_source= option
+- Added MOTD, changed startup to rc.local and Screen
+- Added /boot/ files to repo via a Git pre-commit hook
+- Added logging of camera script to camera.txt
+- Added samples of convert_ and take_pic_ scripts
+- Default Full images to always be full sized
+- Use LED0 to show PITS startup and then off to save power
+- Save current image number and restart from next, so if tracker reboots images are not over written
+
+
+# PITS - HAB Tracker software for the PITS boards #
+
 This software is written for the PITS Zero with Pi Zero, PITS+ with the various A+/B+ models, and the original PITS with the Pi A/B boards.
 
 PITS Zero and PITS+ can be purchased from board from http://ava.upuaut.net/store/.

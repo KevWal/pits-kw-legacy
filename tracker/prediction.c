@@ -69,7 +69,7 @@ double CalculateCDA(double Weight, double Altitude, double DescentRate)
 	
 	Density = CalculateAirDensity(Altitude);
 	
-	printf("Alt %.0lf, Rate %.1lf, CDA %.1lf\n", Altitude, DescentRate, (Weight * 9.81)/(0.5 * Density * DescentRate * DescentRate));
+	// printf("Alt %.0lf, Rate %.1lf, CDA %.1lf\n", Altitude, DescentRate, (Weight * 9.81)/(0.5 * Density * DescentRate * DescentRate));
 
     return (Weight * 9.81)/(0.5 * Density * DescentRate * DescentRate);
 }
@@ -111,7 +111,7 @@ void *PredictionLoop(void *some_void_ptr)
 					// Deltas are scaled to be horizontal distance per second (i.e. speed)
 					Positions[Slot].LatitudeDelta = (GPS->Latitude - PreviousLatitude) / POLL_PERIOD;
 					Positions[Slot].LongitudeDelta = (GPS->Longitude - PreviousLongitude) / POLL_PERIOD;
-					printf("Slot %d (%" PRId32 "): %lf, %lf\n", Slot, GPS->Altitude, Positions[Slot].LatitudeDelta, Positions[Slot].LongitudeDelta);
+					// printf("Slot %d (%" PRId32 "): %lf, %lf\n", Slot, GPS->Altitude, Positions[Slot].LatitudeDelta, Positions[Slot].LongitudeDelta);
 				}
 				// else if ((GPS->MaximumAltitude > 5000) && (PreviousAltitude < GPS->MaximumAltitude) && (GPS->Altitude < PreviousAltitude) && (GPS->Altitude > Config.TargetAltitude))
 				else if ((GPS->FlightMode >= fmDescending) && (GPS->FlightMode <= fmLanding))
@@ -133,13 +133,13 @@ void *PredictionLoop(void *some_void_ptr)
 
 				GPS->PredictedLandingSpeed = CalculateDescentRate(Config.payload_weight, GPS->CDA, Config.TargetAltitude);
 				
-				printf("Expected Descent Rate = %4.1lf (now) %3.1lf (landing), time till landing %d\n", 
-						CalculateDescentRate(Config.payload_weight, GPS->CDA, GPS->Altitude),
-						GPS->PredictedLandingSpeed,
-						GPS->TimeTillLanding);
+				// printf("Expected Descent Rate = %4.1lf (now) %3.1lf (landing), time till landing %d\n", 
+				//		CalculateDescentRate(Config.payload_weight, GPS->CDA, GPS->Altitude),
+				//		GPS->PredictedLandingSpeed,
+				//		GPS->TimeTillLanding);
 
-				printf("Current    %f, %f, alt %" PRId32 "\n", GPS->Latitude, GPS->Longitude, GPS->Altitude);
-				printf("Prediction %f, %f, CDA %lf\n", GPS->PredictedLatitude, GPS->PredictedLongitude, GPS->CDA);
+				// printf("Current    %f, %f, alt %" PRId32 "\n", GPS->Latitude, GPS->Longitude, GPS->Altitude);
+				// printf("Prediction %f, %f, CDA %lf\n", GPS->PredictedLatitude, GPS->PredictedLongitude, GPS->CDA);
 				
 #				ifdef EXTRAS_PRESENT
 					Slot = GetSlot(GPS->Altitude/2 + PreviousAltitude/2);

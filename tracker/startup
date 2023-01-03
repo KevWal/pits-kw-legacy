@@ -1,6 +1,14 @@
 #!/bin/bash
 cd /home/pi/pits/tracker
-sudo ./camera &
+
+# Turn Pi LED0 on in heartbeat mode to signify PITS startup
+echo 255 | sudo tee /sys/class/leds/led0/brightness
+echo heartbeat | sudo tee /sys/class/leds/led0/trigger
+# After 30 seconds turn off LED0 to save power
+(sleep 30; echo 0 | sudo tee /sys/class/leds/led0/brightness) &
+
+sudo ./camera 2>&1 | sudo tee /home/pi/pits/tracker/camera.txt &
+
 # sleep 30
 # sudo python3 gopro.py &
 # python3 sensors.py &
