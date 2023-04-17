@@ -260,6 +260,7 @@ void *CameraLoop(void *some_void_ptr)
 										if ((width == 0) || (height == 0))
 										{
 											fprintf(fp, "raspistill -st -t 3000 -ex auto -mm matrix %s -o %s\n", Config.CameraSettings, FileName);
+											//fprintf(fp, "raspivid --nopreview --timeout 6000 --vstab --exposure auto --metering matrix --output test.h264")
 										}
 										else
 										{
