@@ -33,7 +33,6 @@ adc_vmax=12.208
 
 # If RTTY is not disabled, on startup send IP Address and SD Card Free space messages X times
 info_messages=2
-Send_Field_List=N
 
 
 ##############
@@ -271,6 +270,8 @@ LORA_Uplink_Frequency_0=434.737
 # Uplink encryption key
 #UplinkCode=
 
+# Send Fieldstring for Sondehub
+Send_Field_List=Y
 
 # Adds extra UKHAS sentence field for LastCommand
 LORA_Message_Status_0=Y
