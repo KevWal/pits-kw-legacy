@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/ipc.h>
@@ -230,7 +231,7 @@ void *CameraLoop(void *some_void_ptr)
 							// Doesn't exist, so create it.  Script will run it next time it checks
 							if ((fp = fopen(filename, "wt")) != NULL)
 							{
-								char FileName[256];
+								char FileName[256], VideoFileName[256];
 								int Mode;
 								
 								if (Channel == 4)
@@ -239,6 +240,7 @@ void *CameraLoop(void *some_void_ptr)
 									fprintf(fp, "mkdir -p %s/$2\n", Config.Channels[Channel].SSDVFolder);
 
 									snprintf(FileName, sizeof(FileName), "%s/$2/$1.JPG", Config.Channels[Channel].SSDVFolder);				
+									snprintf(VideoFileName,  sizeof(FileName), "%s/$2/$1.mkv", Config.Channels[Channel].SSDVFolder);
 
 									if (Config.Camera == 3)
 									{
@@ -260,7 +262,37 @@ void *CameraLoop(void *some_void_ptr)
 										if ((width == 0) || (height == 0))
 										{
 											fprintf(fp, "raspistill -st -t 3000 -ex auto -mm matrix %s -o %s\n", Config.CameraSettings, FileName);
-											//fprintf(fp, "raspivid --nopreview --timeout 6000 --vstab --exposure auto --metering matrix --output test.h264")
+											// If we have enough disc space, record a video
+											struct statvfs buf;
+											statvfs(".", &buf);
+											unsigned long long ull = buf.f_bavail * (unsigned long long) buf.f_bsize;
+											// 600000000 = 600mb
+											if (ull > 600000000)
+												{
+													printf("Enough Storage available: %llu\n", ull);
+													// If Full Size Channel and raspi camera and image size not specified in full sized channel then add video recording
+
+													// Output is a raw h264 stream, can be played with (for example) "C:\Program Files\VideoLAN\VLC\vlc.exe" test.264 --h264-fps=30 --demux h264
+													// Set preview window same as video window otherwise you see the 'zoom' from one to the other
+
+													// Mode 5 and resolutions to match gives Full frame (no cropping) with 2x2 binning at up to 40 fps
+													// https://picamera.readthedocs.io/en/release-1.13/fov.html?highlight=fov#sensor-modes
+
+													// Initally pause for 2.5s to let exposure adjust then record for 6s.  --timeout stops more than one iteration as long as shorter than pause value
+													// Bitrate of 0 = variable, quality set by qp of 10 to 40
+
+													// Intra 15 gives an I frame every 15 frames, and --inline --spstimings includes inline header frames in stream
+
+													// fprintf(fp, "raspivid --nopreview --preview 1920,1080,1920,1080 --timeout 2000 --timed 6000,2500 --initial pause --vstab --exposure auto --metering matrix --output /dev/shm/temp.h264 --save-pts /dev/shm/temp.pts\n");
+													fprintf(fp, "raspivid --nopreview --preview 1640,922,1640,922 -w 1640 -h 922 --mode 5 --bitrate 0 -qp 17 --intra 15 --inline --spstimings --timeout 2000 --timed 6000,2500 --initial pause --vstab --exposure auto --metering matrix --output /dev/shm/temp.h264 --save-pts /dev/shm/temp.pts\n");
+													// Package in a mkv for easy playback
+													fprintf(fp, "mkvmerge -o %s --timecodes 0:/dev/shm/temp.pts /dev/shm/temp.h264\n", VideoFileName);
+													fprintf(fp, "rm /dev/shm/temp.h264 /dev/shm/temp.pts\n");
+												}
+											else
+												{
+													printf("ERROR: Not Enough Storage available: %llu\n", ull);
+												}
 										}
 										else
 										{
