@@ -4,6 +4,7 @@ Pi Tracker
         Telemetry log file: /home/pi/pits/tracker/telemetry.txt
 	Camera log file: /home/pi/pits/tracker/camera.txt
 
+	Start: sudo screen -dmS PITS /home/pi/pits/tracker/startup
         Config:  /boot/pisky.txt
 	Connect: sudo screen -dr PITS
 
