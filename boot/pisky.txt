@@ -102,7 +102,7 @@ full_high_height=0
 
 # Seconds between full-sized images
 # 0 disables full-sized images
-full_image_period=30
+full_image_period=60
 
 
 #############
@@ -232,6 +232,7 @@ LORA_DIO5_0=29
 #LORA_RST=0
 
 # OV5647 aka Pi Cam v1 = Max 2592 x 1944
+# IMX219 aka Pi Cam v2 = Max 3280 x 2464
 LORA_low_width_0=1024
 LORA_low_height_0=768
 LORA_high_width_0=1280
@@ -242,7 +243,7 @@ LORA_high_height_0=960
 LORA_image_packets_0=11
 
 # Seconds between taking LORA photographs and then choose best pic to send
-LORA_image_period_0=15
+LORA_image_period_0=20
 
 # TDM mode
 #LORA_Cycle_0=0
