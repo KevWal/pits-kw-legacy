@@ -61,30 +61,21 @@ start_x=1
 #display_auto_detect=1
 
 # Enable DRM VC4 V3D driver
+
+#FKMS (fake) uses the dispmanx and mailbox API's to talk to the firmware for  the composition and video output stages.
+#dtoverlay=vc4-fkms-v3d
+
+#KMS does all that by accessing the HW registers directly from ARM space, bypassing the firmware completely.
 #dtoverlay=vc4-kms-v3d
-#max_framebuffers=2
 
 # Disable compensation for displays with overscan
 #disable_overscan=1
 
 #Enable USB Ethernet
-dtoverlay=dwc2
+#dtoverlay=dwc2
 
 #Zero W UART enable
 enable_uart=1
-
-#Disable Bluetooth
-dtoverlay=pi3-disable-bt
-
-#[cm4]
-# Enable host mode on the 2711 built-in XHCI USB controller.
-# This line should be removed if the legacy DWC2 controller is required
-# (e.g. for USB device mode) or if USB support is not required.
-#otg_mode=1
-
-#[all]
-
-dtoverlay=vc4-fkms-v3d
 
 # Run as fast as firmware / board allows
 #arm_boost=1
@@ -109,5 +100,5 @@ max_framebuffers=0
 
 # Disable BT and WiFi to save power
 dtoverlay=pi3-disable-bt
-dtoverlay=pi3-disable-wifi
+#dtoverlay=pi3-disable-wifi
 
