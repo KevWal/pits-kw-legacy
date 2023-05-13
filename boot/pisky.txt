@@ -222,7 +222,7 @@ Piezo_Alt=750
 
 LORA_Frequency_0=434.712
 #LORA_PPM_0=0
-LORA_Payload_0=KW01
+LORA_Payload_0=KW03
 LORA_Mode_0=1
 
 # LORA module pins
@@ -233,6 +233,8 @@ LORA_DIO5_0=29
 
 # OV5647 aka Pi Cam v1 = Max 2592 x 1944
 # IMX219 aka Pi Cam v2 = Max 3280 x 2464
+# Pi should always use full field of view and GPU will downscale to these resolutions
+# https://picamera.readthedocs.io/en/release-1.13/fov.html?highlight=fov#sensor-modes
 LORA_low_width_0=1024
 LORA_low_height_0=768
 LORA_high_width_0=1280
@@ -290,9 +292,9 @@ LORA_RSSI_Status_0=Y
 LORA_Power_0=143
 
 # Calling mode - see http://www.daveakerman.com/?p=1816
-LORA_Calling_Frequency_0=433.650
+#LORA_Calling_Frequency_0=433.650
 # After every X normal LORA telemetry messages, send our calling frequency messages
-LORA_Calling_Count_0=50
+#LORA_Calling_Count_0=50
 # Limit Calling mode packets to slot X
 #LORA_Calling_Slot_0=
 

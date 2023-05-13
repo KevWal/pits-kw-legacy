@@ -87,7 +87,7 @@ gpu_mem=144
 dtoverlay=w1-gpio
 
 # Forces HDMI to be disabled
-hdmi_ignore_hotplug
+hdmi_ignore_hotplug=1
 
 # Forces Composite display out to be disabled
 enable_tvout=0
